@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRRT 配方及参数管理工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+        .tab-button.active {
+            border-color: #3b82f6;
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Styles for Volume Management Tab */
+        .vm-question {
+            transition: opacity 0.5s ease-in-out;
+        }
+        .vm-option {
+            cursor: pointer;
+        }
+        input[type="radio"]:checked + label {
+            background-color: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        #vm-result-text ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        #vm-result-text li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+<div class="w-full max-w-5xl bg-white rounded-2xl shadow-lg p-6 md:p-8">
+    <header class="text-center mb-6">
+        <h1 class="text-2xl md:text-3xl font-bold text-blue-700">CRRT 参数与配方计算器</h1>
+        <p class="text-gray-500 mt-2">整合配方、参数与容量管理功能</p>
+    </header>
+
+    <!-- Tabs Navigation -->
+    <div class="mb-6 border-b border-gray-200">
+        <nav class="flex space-x-1 sm:space-x-2" aria-label="Tabs">
+            <button id="tab-btn-1" class="tab-button active text-sm md:text-lg font-medium py-3 px-4 rounded-t-lg border-b-2" onclick="switchTab(1)">
+                配方计算器
+            </button>
+            <button id="tab-btn-2" class="tab-button text-sm md:text-lg font-medium py-3 px-4 rounded-t-lg border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab(2)">
+                参数计算器
+            </button>
+            <button id="tab-btn-3" class="tab-button text-sm md:text-lg font-medium py-3 px-4 rounded-t-lg border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab(3)">
+                容量管理
+            </button>
+        </nav>
+    </div>
+
+    <!-- Tab 1: 配方计算器 -->
+    <div id="tab-content-1" class="tab-content active">
+        <!-- Mode Selector -->
+        <div class="mb-6">
+            <label for="formula_mode_selector" class="block text-lg font-medium text-gray-700 mb-2">计算模式</label>
+            <select id="formula_mode_selector" class="w-full p-2 border border-gray-300 rounded-md bg-gray-50">
+                <option value="adjust">调整成品溶液 (基于浓度)</option>
+                <option value="create">配置自定义溶液 (基于含量)</option>
+            </select>
+        </div>
+
+        <!-- Adjust Mode -->
+        <div id="adjust_mode_content">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <!-- Input Section -->
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b-2 border-blue-600 pb-2 mb-4">1. 成分与剂量</h2>
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium text-gray-700 mb-3">基础溶液 (成品A液)</h3>
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="base_volume" class="font-medium text-gray-600">基础溶液体积</label><div class="flex items-center justify-end"><input type="number" id="base_volume" value="4000" step="100" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="base_na" class="font-medium text-gray-600">Na<sup>+</sup></label><div class="flex items-center justify-end"><input type="number" id="base_na" value="113" step="1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mmol/L</span></div></div>
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="base_cl" class="font-medium text-gray-600">Cl<sup>-</sup></label><div class="flex items-center justify-end"><input type="number" id="base_cl" value="118" step="1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mmol/L</span></div></div>
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="base_glucose" class="font-medium text-gray-600">葡萄糖</label><div class="flex items-center justify-end"><input type="number" id="base_glucose" value="10.6" step="0.1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mmol/L</span></div></div>
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="base_mg" class="font-medium text-gray-600">Mg<sup>2+</sup></label><div class="flex items-center justify-end"><input type="number" id="base_mg" value="0.797" step="0.01" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mmol/L</span></div></div>
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="base_ca" class="font-medium text-gray-600">Ca<sup>2+</sup></label><div class="flex items-center justify-end"><input type="number" id="base_ca" value="1.6" step="0.1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mmol/L</span></div></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-3">添加剂</h3>
+                        <div class="space-y-3">
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="add_kcl" class="font-medium text-gray-600">15% KCl</label><div class="flex items-center justify-end"><input type="number" id="add_kcl" value="9.0" step="0.1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="add_nacl" class="font-medium text-gray-600">10% NaCl</label><div class="flex items-center justify-end"><input type="number" id="add_nacl" value="0" step="0.1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="add_nahco3" class="font-medium text-gray-600">5% NaHCO<sub>3</sub></label><div class="flex items-center justify-end"><input type="number" id="add_nahco3" value="125" step="1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                            <div class="grid grid-cols-2 items-center gap-4"><label for="add_mgso4" class="font-medium text-gray-600">25% MgSO<sub>4</sub>·7H<sub>2</sub>O</label><div class="flex items-center justify-end"><input type="number" id="add_mgso4" value="3.2" step="0.1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                        </div>
+                    </div>
+                     <p class="text-xs text-gray-500 mt-4 italic">*注: 为了使预设计算结果与您图片右侧的目标浓度相匹配，部分添加剂的预设值经过了微调。</p>
+                </div>
+                <!-- Result Section -->
+                <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b-2 border-blue-600 pb-2 mb-4">2. 最终成品液浓度</h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm"><span class="font-semibold text-lg text-blue-800">总体积</span><div><span id="final_volume" class="text-xl font-bold text-blue-800">0</span><span class="ml-1 text-gray-600">mL</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Na<sup>+</sup></span><div class="text-right"><span id="final_na" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">K<sup>+</sup></span><div class="text-right"><span id="final_k" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Cl<sup>-</sup></span><div class="text-right"><span id="final_cl" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">葡萄糖</span><div class="text-right"><span id="final_glucose" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Mg<sup>2+</sup></span><div class="text-right"><span id="final_mg" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Ca<sup>2+</sup></span><div class="text-right"><span id="final_ca" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">SO<sub>4</sub><sup>2-</sup></span><div class="text-right"><span id="final_so4" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">HCO<sub>3</sub><sup>-</sup></span><div class="text-right"><span id="final_hco3" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Mode -->
+        <div id="create_mode_content" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <!-- Input Section -->
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <div class="flex justify-between items-center border-b-2 border-blue-600 pb-2 mb-4">
+                         <h2 class="text-xl font-semibold text-gray-800">1. 各液体含量 (mL)</h2>
+                         <div class="space-x-2">
+                            <button id="load_custom_a" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-2 rounded-lg">加载现配A液</button>
+                            <button id="load_custom_ca_free" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold py-1 px-2 rounded-lg">加载无钙A液</button>
+                         </div>
+                    </div>
+                    <div class="space-y-3 mt-4">
+                        <div class="grid grid-cols-2 items-center gap-4"><label for="create_nacl_09" class="font-medium text-gray-600">0.9% NaCl</label><div class="flex items-center justify-end"><input type="number" id="create_nacl_09" value="3000" step="100" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-4"><label for="create_kcl_15" class="font-medium text-gray-600">15% KCl</label><div class="flex items-center justify-end"><input type="number" id="create_kcl_15" value="8" step="1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-4"><label for="create_water" class="font-medium text-gray-600">注射用水</label><div class="flex items-center justify-end"><input type="number" id="create_water" value="750" step="50" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-4"><label for="create_glucose_50" class="font-medium text-gray-600">50% 葡萄糖</label><div class="flex items-center justify-end"><input type="number" id="create_glucose_50" value="7.5" step="0.5" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-4"><label for="create_mgso4_25" class="font-medium text-gray-600">25% MgSO₄·7H₂O</label><div class="flex items-center justify-end"><input type="number" id="create_mgso4_25" value="4.5" step="0.5" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-4"><label for="create_ca_gluconate_10" class="font-medium text-gray-600">10% 糖酸钙</label><div class="flex items-center justify-end"><input type="number" id="create_ca_gluconate_10" value="25" step="1" class="w-28 text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                    </div>
+                </div>
+                <!-- Result Section -->
+                <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b-2 border-blue-600 pb-2 mb-4">2. 最终成品液浓度</h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm"><span class="font-semibold text-lg text-blue-800">总体积</span><div><span id="create_final_volume" class="text-xl font-bold text-blue-800">0</span><span class="ml-1 text-gray-600">mL</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Na<sup>+</sup></span><div class="text-right"><span id="create_final_na" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">K<sup>+</sup></span><div class="text-right"><span id="create_final_k" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Cl<sup>-</sup></span><div class="text-right"><span id="create_final_cl" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">葡萄糖</span><div class="text-right"><span id="create_final_glucose" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Mg<sup>2+</sup></span><div class="text-right"><span id="create_final_mg" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Ca<sup>2+</sup></span><div class="text-right"><span id="create_final_ca" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                        <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">SO<sub>4</sub><sup>2-</sup></span><div class="text-right"><span id="create_final_so4" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additive Information Section -->
+        <div class="mt-6 md:mt-8 bg-gray-50 p-6 rounded-xl border border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800 border-b-2 border-gray-300 pb-2 mb-4">添加剂信息参考</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="p-3 font-medium text-gray-600">添加剂</th>
+                            <th class="p-3 font-medium text-gray-600 text-right">物质的量 (每克溶质)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-200"><td class="p-3">KCl</td><td class="p-3 text-right font-mono">13.41 mmol/g</td></tr>
+                        <tr class="border-b border-gray-200"><td class="p-3">NaCl</td><td class="p-3 text-right font-mono">17.11 mmol/g</td></tr>
+                        <tr class="border-b border-gray-200"><td class="p-3">NaHCO<sub>3</sub></td><td class="p-3 text-right font-mono">11.90 mmol/g</td></tr>
+                        <tr><td class="p-3">MgSO<sub>4</sub>·7H<sub>2</sub>O</td><td class="p-3 text-right font-mono">4.06 mmol/g</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: 参数计算器 -->
+    <div id="tab-content-2" class="tab-content">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+            <!-- Input Section -->
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800 border-b-2 border-blue-600 pb-2 mb-4">1. CRRT 治疗参数</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="param_fluid_type" class="font-medium text-gray-600">置换液类型</label>
+                        <select id="param_fluid_type" class="w-full mt-1 p-2 border border-gray-300 rounded-md">
+                            <option value="custom_a">现配A液</option>
+                            <option value="custom_ca_free">现配无钙A液</option>
+                            <option value="product_a">成品A液</option>
+                        </select>
+                    </div>
+                    <div id="fluid_adjustment_details" class="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <h3 class="font-semibold text-gray-700">置换液浓度调整</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label for="param_added_water" class="font-medium text-gray-600">添加注射用水</label><div class="flex items-center mt-1"><input type="number" id="param_added_water" value="0" step="10" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                            <div><label for="param_added_nacl10" class="font-medium text-gray-600">添加10% NaCl</label><div class="flex items-center mt-1"><input type="number" id="param_added_nacl10" value="0" step="1" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                             <div><label for="param_added_kcl15" class="font-medium text-gray-600">添加15% KCl</label><div class="flex items-center mt-1"><input type="number" id="param_added_kcl15" value="0" step="0.1" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                             <div><label for="param_added_glucose50" class="font-medium text-gray-600">添加50%葡萄糖</label><div class="flex items-center mt-1"><input type="number" id="param_added_glucose50" value="0" step="0.1" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                             <div><label for="param_added_mgso4_25" class="font-medium text-gray-600">添加25% MgSO₄</label><div class="flex items-center mt-1"><input type="number" id="param_added_mgso4_25" value="0" step="0.1" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mL</span></div></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 italic">*注: 此处添加量是针对一个标准单位的置换液进行的调整。</p>
+                        <details class="mt-2 text-sm">
+                            <summary class="cursor-pointer text-blue-600 font-medium">查看调整后最终置换液配方含量</summary>
+                            <div id="adjusted-fluid-composition-display" class="mt-2 text-gray-700 bg-white p-3 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2"></div>
+                        </details>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label for="param_fluid_rate" class="font-medium text-gray-600">置换液速度</label><div class="flex items-center mt-1"><input type="number" id="param_fluid_rate" value="2000" step="50" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">ml/h</span></div></div>
+                        <div><label for="param_ca_rate" class="font-medium text-gray-600">10%糖酸钙</label><div class="flex items-center mt-1"><input type="number" id="param_ca_rate" value="18" step="1" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">ml/h</span></div></div>
+                    </div>
+                     <div class="grid grid-cols-2 gap-4">
+                        <div><label for="param_bicarb_rate" class="font-medium text-gray-600">5%碳酸氢钠</label><div class="flex items-center mt-1"><input type="number" id="param_bicarb_rate" value="100" step="5" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">ml/h</span></div></div>
+                    </div>
+                    <hr class="my-2">
+                    <div>
+                        <label for="param_anticoag_type" class="font-medium text-gray-600">抗凝类型</label>
+                        <select id="param_anticoag_type" class="w-full mt-1 p-2 border border-gray-300 rounded-md">
+                            <option value="none">非枸橼酸</option>
+                            <option value="citrate_3">3%枸橼酸</option>
+                            <option value="citrate_4">4%枸橼酸</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label for="param_blood_flow" class="font-medium text-gray-600">血流速度</label><div class="flex items-center mt-1"><input type="number" id="param_blood_flow" value="120" step="10" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">ml/min</span></div></div>
+                        <div><label for="param_target_conc" class="font-medium text-gray-600">目标抗凝浓度</label><div class="flex items-center mt-1"><input type="number" id="param_target_conc" value="3.0" step="0.1" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">mmol/L</span></div></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label for="param_anticoag_rate" class="font-medium text-gray-600">抗凝剂速度</label><div class="flex items-center mt-1"><input type="number" id="param_anticoag_rate" readonly class="w-full text-right p-2 border border-gray-300 rounded-md bg-gray-200"><span class="ml-2 text-gray-500">ml/h</span></div></div>
+                        <div><label for="param_citrate_loss" class="font-medium text-gray-600">枸橼酸清除率</label><div class="flex items-center mt-1"><input type="number" id="param_citrate_loss" value="22.5" step="0.5" class="w-full text-right p-2 border border-gray-300 rounded-md"><span class="ml-2 text-gray-500">%</span></div></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Result Section -->
+            <div class="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                <h2 class="text-xl font-semibold text-gray-800 border-b-2 border-blue-600 pb-2 mb-4">2. 最终浓度计算结果</h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm"><span class="font-semibold text-lg text-blue-800">CRRT总剂量</span><div><span id="param_total_dose" class="text-xl font-bold text-blue-800">0</span><span class="ml-1 text-gray-600">ml/h</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Na<sup>+</sup></span><div class="text-right"><span id="param_final_na" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">K<sup>+</sup></span><div class="text-right"><span id="param_final_k" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Cl<sup>-</sup></span><div class="text-right"><span id="param_final_cl" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">葡萄糖</span><div class="text-right"><span id="param_final_glucose" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Mg<sup>2+</sup></span><div class="text-right"><span id="param_final_mg" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">HCO<sub>3</sub><sup>-</sup></span><div class="text-right"><span id="param_final_hco3" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">Ca<sup>2+</sup> (总量)</span><div class="text-right"><span id="param_final_ca" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white"><span class="font-medium text-gray-700">SO<sub>4</sub><sup>2-</sup></span><div class="text-right"><span id="param_final_so4" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white bg-yellow-100"><span class="font-medium text-gray-700">枸橼酸根</span><div class="text-right"><span id="param_final_citrate" class="text-lg font-semibold text-red-600">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                    <div class="grid grid-cols-2 items-center gap-x-4 p-2 rounded-md hover:bg-white bg-green-100"><span class="font-medium text-gray-700">代谢后总HCO<sub>3</sub><sup>-</sup></span><div class="text-right"><span id="param_final_hco3_post_metabolism" class="text-lg font-semibold text-green-700">0</span><span class="ml-1 text-sm text-gray-500">mmol/L</span></div></div>
+                </div>
+            </div>
+        </div>
+        <!-- Fluid Composition Reference Table -->
+        <div class="mt-6 md:mt-8 bg-gray-50 p-6 rounded-xl border border-gray-200 lg:col-span-2">
+            <h2 class="text-xl font-semibold text-gray-800 border-b-2 border-gray-300 pb-2 mb-4">置换液配方参考</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="p-3 font-medium text-gray-600">置换液类型</th>
+                            <th class="p-3 font-medium text-gray-600 text-center">浓度 (mmol/L)</th>
+                            <th class="p-3 font-medium text-gray-600">基础配方 (mL)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fluid-composition-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 3: 容量管理 -->
+    <div id="tab-content-3" class="tab-content">
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+            <div class="flex justify-between items-center border-b-2 border-blue-600 pb-2 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800">CRRT 容量管理决策辅助</h2>
+                <button id="vm-reset-btn" class="text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg">重新开始</button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Step 1 -->
+                <div id="vm-step-1" class="vm-question">
+                    <p class="font-semibold text-lg text-gray-700 mb-3">1. 患者容量状态评估</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="vm-option"><input type="radio" name="volume_status" id="vs_deficit" value="deficit" class="hidden"><label for="vs_deficit" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">容量不足</label></div>
+                        <div class="vm-option"><input type="radio" name="volume_status" id="vs_balance" value="balance" class="hidden"><label for="vs_balance" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">容量平衡</label></div>
+                        <div class="vm-option"><input type="radio" name="volume_status" id="vs_overload" value="overload" class="hidden"><label for="vs_overload" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">容量过负荷</label></div>
+                    </div>
+                </div>
+
+                <!-- Step 2a -->
+                <div id="vm-step-2a" class="vm-question hidden">
+                    <p class="font-semibold text-lg text-gray-700 mb-3">2a. 容量反应性评估</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="vm-option"><input type="radio" name="responsiveness" id="resp_good" value="good" class="hidden"><label for="resp_good" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">好</label></div>
+                        <div class="vm-option"><input type="radio" name="responsiveness" id="resp_poor" value="poor" class="hidden"><label for="resp_poor" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">差</label></div>
+                    </div>
+                </div>
+
+                <!-- Step 2b -->
+                <div id="vm-step-2b" class="vm-question hidden">
+                    <p class="font-semibold text-lg text-gray-700 mb-3">2b. 血流动力学评估</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="vm-option"><input type="radio" name="hemodynamics" id="hd_stable" value="stable" class="hidden"><label for="hd_stable" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">稳定</label></div>
+                        <div class="vm-option"><input type="radio" name="hemodynamics" id="hd_unstable" value="unstable" class="hidden"><label for="hd_unstable" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">不稳定</label></div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div id="vm-step-3" class="vm-question hidden">
+                    <p class="font-semibold text-lg text-gray-700 mb-3">3. 肾功能及内环境评估</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="vm-option"><input type="radio" name="renal_function" id="rf_improved" value="improved" class="hidden"><label for="rf_improved" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">改善</label></div>
+                        <div class="vm-option"><input type="radio" name="renal_function" id="rf_no_change" value="no_change" class="hidden"><label for="rf_no_change" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">无改善</label></div>
+                    </div>
+                </div>
+
+                 <!-- Step 4 -->
+                <div id="vm-step-4" class="vm-question hidden">
+                    <p class="font-semibold text-lg text-gray-700 mb-3">4. 病情及肾脏清除能力评估</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="vm-option"><input type="radio" name="final_check" id="fc_can_stop" value="can_stop" class="hidden"><label for="fc_can_stop" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">病情稳定/好转 且<br>容量/代谢需求 &lt; 肾脏清除能力</label></div>
+                        <div class="vm-option"><input type="radio" name="final_check" id="fc_cannot_stop" value="cannot_stop" class="hidden"><label for="fc_cannot_stop" class="block text-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500">不满足上述条件</label></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div id="vm-result" class="mt-8 p-6 bg-blue-100 border-l-4 border-blue-500 rounded-r-lg hidden">
+                <h3 class="text-xl font-bold text-blue-800">决策建议</h3>
+                <div id="vm-result-text" class="mt-2 text-lg text-blue-700"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="w-full max-w-5xl text-center mt-4 p-4 bg-gray-200 rounded-lg">
+    <p class="font-semibold text-gray-800">单位：深圳市南山区人民医院重症医学科</p>
+    <p class="text-gray-700 mt-1">作者：林小华 &nbsp;&nbsp;&nbsp; 邮箱：linnot@163.com</p>
+</div>
+
+<footer class="text-center text-sm text-gray-500 py-4">
+    因病情不同，工具仅供参考，需要结合临床
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Shared Data ---
+    const MOLAR_MASS = { KCl: 74.55, NaCl: 58.44, NaHCO3: 84.01, MgSO4_7H2O: 246.48, C6H12O6_H2O: 198.17 };
+
+    // --- Tab 1: 配方计算器 ---
+    const formulaInputs = document.querySelectorAll('#tab-content-1 input[type="number"]');
+    const formulaModeSelector = document.getElementById('formula_mode_selector');
+    const adjustModeContent = document.getElementById('adjust_mode_content');
+    const createModeContent = document.getElementById('create_mode_content');
+
+    function calculateFormula() {
+        const baseVolume = parseFloat(document.getElementById('base_volume').value) || 0;
+        const baseNa = parseFloat(document.getElementById('base_na').value) || 0;
+        const baseCl = parseFloat(document.getElementById('base_cl').value) || 0;
+        const baseGlucose = parseFloat(document.getElementById('base_glucose').value) || 0;
+        const baseMg = parseFloat(document.getElementById('base_mg').value) || 0;
+        const baseCa = parseFloat(document.getElementById('base_ca').value) || 0;
+        const addKclVol = parseFloat(document.getElementById('add_kcl').value) || 0;
+        const addNaclVol = parseFloat(document.getElementById('add_nacl').value) || 0;
+        const addNahco3Vol = parseFloat(document.getElementById('add_nahco3').value) || 0;
+        const addMgso4Vol = parseFloat(document.getElementById('add_mgso4').value) || 0;
+        const totalVolumeL = (baseVolume + addKclVol + addNaclVol + addNahco3Vol + addMgso4Vol) / 1000;
+        document.getElementById('final_volume').textContent = (totalVolumeL * 1000).toFixed(1);
+        if (totalVolumeL === 0) return;
+        const baseVolumeL = baseVolume / 1000;
+        let totalNa_mmol = baseNa * baseVolumeL;
+        let totalCl_mmol = baseCl * baseVolumeL;
+        let totalGlucose_mmol = baseGlucose * baseVolumeL;
+        let totalMg_mmol = baseMg * baseVolumeL;
+        let totalCa_mmol = baseCa * baseVolumeL;
+        let totalK_mmol = 0, totalHco3_mmol = 0, totalSo4_mmol = 0;
+        const molesKcl = (addKclVol * 0.15 / MOLAR_MASS.KCl) * 1000;
+        totalK_mmol += molesKcl; totalCl_mmol += molesKcl;
+        const molesNacl = (addNaclVol * 0.1 / MOLAR_MASS.NaCl) * 1000;
+        totalNa_mmol += molesNacl; totalCl_mmol += molesNacl;
+        const molesNahco3 = (addNahco3Vol * 0.05 / MOLAR_MASS.NaHCO3) * 1000;
+        totalNa_mmol += molesNahco3; totalHco3_mmol += molesNahco3;
+        const molesMgso4 = (addMgso4Vol * 0.25 / MOLAR_MASS.MgSO4_7H2O) * 1000;
+        totalMg_mmol += molesMgso4; totalSo4_mmol += molesMgso4;
+        document.getElementById('final_na').textContent = (totalNa_mmol / totalVolumeL).toFixed(1);
+        document.getElementById('final_k').textContent = (totalK_mmol / totalVolumeL).toFixed(1);
+        document.getElementById('final_cl').textContent = (totalCl_mmol / totalVolumeL).toFixed(1);
+        document.getElementById('final_glucose').textContent = (totalGlucose_mmol / totalVolumeL).toFixed(1);
+        document.getElementById('final_mg').textContent = (totalMg_mmol / totalVolumeL).toFixed(1);
+        document.getElementById('final_ca').textContent = (totalCa_mmol / totalVolumeL).toFixed(1);
+        document.getElementById('final_so4').textContent = (totalSo4_mmol / totalVolumeL).toFixed(1);
+        document.getElementById('final_hco3').textContent = (totalHco3_mmol / totalVolumeL).toFixed(1);
+    }
+    formulaInputs.forEach(input => input.addEventListener('input', calculateFormula));
+    
+    // --- Create Mode (new logic) ---
+    const createInputs = document.querySelectorAll('#create_mode_content input[type="number"]');
+    const loadCustomABtn = document.getElementById('load_custom_a');
+    const loadCustomCaFreeBtn = document.getElementById('load_custom_ca_free');
+
+    const CUSTOM_RECIPES = {
+        custom_a: { 'nacl_09': 3000, 'kcl_15': 8, 'water': 750, 'glucose_50': 7.5, 'mgso4_25': 4.5, 'ca_gluconate_10': 25 },
+        custom_ca_free: { 'nacl_09': 3000, 'kcl_15': 8, 'water': 750, 'glucose_50': 7.5, 'mgso4_25': 4.5, 'ca_gluconate_10': 0 }
+    };
+
+    const CONCENTRATIONS = {
+        nacl_09: { na: 154, cl: 154 },
+        kcl_15: { k: 2012, cl: 2012 },
+        glucose_50: { glucose: 2523 },
+        mgso4_25: { mg: 1014.3, so4: 1014.3 },
+        ca_gluconate_10: { ca: 223.0 }
+    };
+
+    function loadRecipe(recipe) {
+        Object.keys(recipe).forEach(key => {
+            const input = document.getElementById(`create_${key}`);
+            if(input) input.value = recipe[key];
+        });
+        calculateCustomFormula();
+    }
+
+    loadCustomABtn.addEventListener('click', () => loadRecipe(CUSTOM_RECIPES.custom_a));
+    loadCustomCaFreeBtn.addEventListener('click', () => loadRecipe(CUSTOM_RECIPES.custom_ca_free));
+
+    function calculateCustomFormula() {
+        const volumes = {
+            nacl_09: parseFloat(document.getElementById('create_nacl_09').value) || 0,
+            kcl_15: parseFloat(document.getElementById('create_kcl_15').value) || 0,
+            water: parseFloat(document.getElementById('create_water').value) || 0,
+            glucose_50: parseFloat(document.getElementById('create_glucose_50').value) || 0,
+            mgso4_25: parseFloat(document.getElementById('create_mgso4_25').value) || 0,
+            ca_gluconate_10: parseFloat(document.getElementById('create_ca_gluconate_10').value) || 0,
+        };
+
+        const totalVolume = Object.values(volumes).reduce((sum, vol) => sum + vol, 0);
+        const totalVolumeL = totalVolume / 1000;
+        
+        document.getElementById('create_final_volume').textContent = totalVolume.toFixed(1);
+        
+        const resultsSpans = {
+            na: document.getElementById('create_final_na'),
+            k: document.getElementById('create_final_k'),
+            cl: document.getElementById('create_final_cl'),
+            glucose: document.getElementById('create_final_glucose'),
+            mg: document.getElementById('create_final_mg'),
+            ca: document.getElementById('create_final_ca'),
+            so4: document.getElementById('create_final_so4'),
+        };
+
+        if (totalVolumeL === 0) {
+            Object.values(resultsSpans).forEach(span => span.textContent = '0');
+            return;
+        }
+
+        const total_mmol = { na: 0, k: 0, cl: 0, glucose: 0, mg: 0, ca: 0, so4: 0 };
+        total_mmol.na += (volumes.nacl_09 / 1000) * CONCENTRATIONS.nacl_09.na;
+        total_mmol.cl += (volumes.nacl_09 / 1000) * CONCENTRATIONS.nacl_09.cl;
+        total_mmol.k += (volumes.kcl_15 / 1000) * CONCENTRATIONS.kcl_15.k;
+        total_mmol.cl += (volumes.kcl_15 / 1000) * CONCENTRATIONS.kcl_15.cl;
+        total_mmol.glucose += (volumes.glucose_50 / 1000) * CONCENTRATIONS.glucose_50.glucose;
+        total_mmol.mg += (volumes.mgso4_25 / 1000) * CONCENTRATIONS.mgso4_25.mg;
+        total_mmol.so4 += (volumes.mgso4_25 / 1000) * CONCENTRATIONS.mgso4_25.so4;
+        total_mmol.ca += (volumes.ca_gluconate_10 / 1000) * CONCENTRATIONS.ca_gluconate_10.ca;
+
+        resultsSpans.na.textContent = (total_mmol.na / totalVolumeL).toFixed(1);
+        resultsSpans.k.textContent = (total_mmol.k / totalVolumeL).toFixed(1);
+        resultsSpans.cl.textContent = (total_mmol.cl / totalVolumeL).toFixed(1);
+        resultsSpans.glucose.textContent = (total_mmol.glucose / totalVolumeL).toFixed(1);
+        resultsSpans.mg.textContent = (total_mmol.mg / totalVolumeL).toFixed(1);
+        resultsSpans.ca.textContent = (total_mmol.ca / totalVolumeL).toFixed(1);
+        resultsSpans.so4.textContent = (total_mmol.so4 / totalVolumeL).toFixed(1);
+    }
+    createInputs.forEach(input => input.addEventListener('input', calculateCustomFormula));
+
+    // Mode switching logic
+    formulaModeSelector.addEventListener('change', (e) => {
+        if (e.target.value === 'adjust') {
+            adjustModeContent.classList.remove('hidden');
+            createModeContent.classList.add('hidden');
+        } else {
+            adjustModeContent.classList.add('hidden');
+            createModeContent.classList.remove('hidden');
+        }
+    });
+    
+    // Initial calls
+    calculateFormula();
+    calculateCustomFormula();
+
+    // --- Tab 2: 参数计算器 ---
+    const paramInputs = document.querySelectorAll('#tab-content-2 input[type="number"], #tab-content-2 select');
+    const INFUSIONS = {
+        calcium_gluconate_10: { ca: 225 },
+        sodium_bicarbonate_5: { na: 595, hco3: 595 },
+        citrate_3: { na: 224.4, citrate: 112.9, glucose: 123.6 },
+        citrate_4: { na: 408.0, citrate: 136.0 }
+    };
+    const BASE_FLUID_COMPOSITIONS = {
+        custom_a:       { name: "现配A液", baseVolume: 3795, comp: { na: 121.7, k: 4.2, cl: 126.0, glucose: 7.9, mg: 1.2, ca: 1.5, hco3: 0, citrate: 0, so4: 1.2 }, recipe: {'0.9% NaCl': 3000, '15% KCl': 8, '注射用水': 750, '50% 葡萄糖': 7.5, '25% MgSO₄': 4.5, '10% 糖酸钙': 25}},
+        custom_ca_free: { name: "现配无钙A液", baseVolume: 3770, comp: { na: 122.5, k: 4.3, cl: 126.8, glucose: 5.0, mg: 1.2, ca: 0, hco3: 0, citrate: 0, so4: 1.2 }, recipe: {'0.9% NaCl': 3000, '15% KCl': 8, '注射用水': 750, '50% 葡萄糖': 7.5, '25% MgSO₄': 4.5, '10% 糖酸钙': 0}},
+        product_a:      { name: "成品A液", baseVolume: 4000, comp: { na: 112.7, k: 4.5, cl: 122.3, glucose: 10.6, mg: 0.8, ca: 1.6, hco3: 0, citrate: 0, so4: 0.8 }, recipe: {'成品A液原液': 4000, '15% KCl': 9.0}}
+    };
+
+    function populateFluidTable() {
+        const tableBody = document.getElementById('fluid-composition-table');
+        tableBody.innerHTML = '';
+        Object.values(BASE_FLUID_COMPOSITIONS).forEach((fluid, index) => {
+            const row = document.createElement('tr');
+            row.className = index < Object.keys(BASE_FLUID_COMPOSITIONS).length - 1 ? 'border-b border-gray-200' : '';
+            
+            let concentrationHtml = `<div class="grid grid-cols-2 gap-x-4">`;
+            Object.entries(fluid.comp).forEach(([ion, value]) => {
+                let ionHtml = ion.replace('na', 'Na<sup>+</sup>').replace('k', 'K<sup>+</sup>').replace('cl', 'Cl<sup>-</sup>').replace('glucose', '葡萄糖').replace('mg', 'Mg<sup>2+</sup>').replace('ca', 'Ca<sup>2+</sup>').replace('hco3', 'HCO<sub>3</sub><sup>-</sup>').replace('so4', 'SO<sub>4</sub><sup>2-</sup>');
+                if (ion !== 'citrate') {
+                   concentrationHtml += `<div>${ionHtml}: <span class="font-mono">${value.toFixed(1)}</span></div>`;
+                }
+            });
+            concentrationHtml += `</div>`;
+
+            let recipeHtml = 'N/A';
+            if(fluid.recipe) {
+                recipeHtml = Object.entries(fluid.recipe).map(([key, value]) => `${key}: ${value}mL`).join('<br>');
+            }
+
+            row.innerHTML = `
+                <td class="p-3 font-semibold text-gray-700 align-top">${fluid.name}</td>
+                <td class="p-3 text-left font-mono text-xs">${concentrationHtml}</td>
+                <td class="p-3 text-left font-mono text-xs align-top">${recipeHtml}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function updateAdjustedFluidDisplay() {
+        const displayDiv = document.getElementById('adjusted-fluid-composition-display');
+        const fluidType = document.getElementById('param_fluid_type').value;
+        const baseInfo = BASE_FLUID_COMPOSITIONS[fluidType];
+        const addedWater = parseFloat(document.getElementById('param_added_water').value) || 0;
+        const addedNacl10 = parseFloat(document.getElementById('param_added_nacl10').value) || 0;
+        const addedKcl15 = parseFloat(document.getElementById('param_added_kcl15').value) || 0;
+        const addedGlucose50 = parseFloat(document.getElementById('param_added_glucose50').value) || 0;
+        const addedMgso4_25 = parseFloat(document.getElementById('param_added_mgso4_25').value) || 0;
+        let html = '';
+
+        if (baseInfo.recipe) {
+            Object.entries(baseInfo.recipe).forEach(([key, value]) => {
+                if (value > 0) html += `<div>${key}: <span class="font-mono font-bold">${value.toFixed(1)}</span> mL</div>`;
+            });
+        } else {
+            html += `<div>${baseInfo.name}: <span class="font-mono font-bold">${baseInfo.baseVolume.toFixed(1)}</span> mL</div>`;
+        }
+        
+        html += `<hr class="col-span-full my-1">`;
+        if (addedWater > 0) html += `<div class="text-green-600">添加注射用水: <span class="font-mono font-bold">${addedWater.toFixed(1)}</span> mL</div>`;
+        if (addedNacl10 > 0) html += `<div class="text-green-600">添加10% NaCl: <span class="font-mono font-bold">${addedNacl10.toFixed(1)}</span> mL</div>`;
+        if (addedKcl15 > 0) html += `<div class="text-green-600">添加15% KCl: <span class="font-mono font-bold">${addedKcl15.toFixed(1)}</span> mL</div>`;
+        if (addedGlucose50 > 0) html += `<div class="text-green-600">添加50%葡萄糖: <span class="font-mono font-bold">${addedGlucose50.toFixed(1)}</span> mL</div>`;
+        if (addedMgso4_25 > 0) html += `<div class="text-green-600">添加25% MgSO₄: <span class="font-mono font-bold">${addedMgso4_25.toFixed(1)}</span> mL</div>`;
+
+        const totalVolume = baseInfo.baseVolume + addedWater + addedNacl10 + addedKcl15 + addedGlucose50 + addedMgso4_25;
+        html += `<hr class="col-span-full my-1">`;
+        html += `<div class="font-semibold col-span-full">调整后总体积: <span class="font-mono font-bold">${totalVolume.toFixed(1)}</span> mL</div>`;
+        
+        displayDiv.innerHTML = html;
+    }
+
+    function getAdjustedFluidComposition() {
+        const fluidType = document.getElementById('param_fluid_type').value;
+        const baseInfo = BASE_FLUID_COMPOSITIONS[fluidType];
+        const baseVolumeL = baseInfo.baseVolume / 1000;
+        const addedWater = parseFloat(document.getElementById('param_added_water').value) || 0;
+        const addedNacl10 = parseFloat(document.getElementById('param_added_nacl10').value) || 0;
+        const addedKcl15 = parseFloat(document.getElementById('param_added_kcl15').value) || 0;
+        const addedGlucose50 = parseFloat(document.getElementById('param_added_glucose50').value) || 0;
+        const addedMgso4_25 = parseFloat(document.getElementById('param_added_mgso4_25').value) || 0;
+        
+        let total_mmol = {};
+        for (const ion in baseInfo.comp) {
+            total_mmol[ion] = baseInfo.comp[ion] * baseVolumeL;
+        }
+
+        const nacl10_mmol_per_ml = 1.711;
+        total_mmol.na += addedNacl10 * nacl10_mmol_per_ml;
+        total_mmol.cl += addedNacl10 * nacl10_mmol_per_ml;
+        
+        const kcl15_mmol_per_ml = 2.012;
+        total_mmol.k += addedKcl15 * kcl15_mmol_per_ml;
+        total_mmol.cl += addedKcl15 * kcl15_mmol_per_ml;
+
+        const glucose50_mmol_per_ml = (0.5 / MOLAR_MASS.C6H12O6_H2O) * 1000;
+        total_mmol.glucose += addedGlucose50 * glucose50_mmol_per_ml;
+
+        const mgso4_25_mmol_per_ml = (0.25 / MOLAR_MASS.MgSO4_7H2O) * 1000;
+        total_mmol.mg += addedMgso4_25 * mgso4_25_mmol_per_ml;
+        total_mmol.so4 += addedMgso4_25 * mgso4_25_mmol_per_ml;
+        
+        const newTotalVolumeL = (baseInfo.baseVolume + addedWater + addedNacl10 + addedKcl15 + addedGlucose50 + addedMgso4_25) / 1000;
+        if (newTotalVolumeL === 0) return baseInfo.comp;
+
+        let newComposition = {};
+        for (const ion in total_mmol) {
+            newComposition[ion] = total_mmol[ion] / newTotalVolumeL;
+        }
+        return newComposition;
+    }
+
+    function calculateParameters() {
+        const fluidRate = parseFloat(document.getElementById('param_fluid_rate').value) || 0;
+        const caRate = parseFloat(document.getElementById('param_ca_rate').value) || 0;
+        const bicarbRate = parseFloat(document.getElementById('param_bicarb_rate').value) || 0;
+        const anticoagType = document.getElementById('param_anticoag_type').value;
+        const bloodFlow = parseFloat(document.getElementById('param_blood_flow').value) || 0;
+        const targetConc = parseFloat(document.getElementById('param_target_conc').value) || 0;
+        const citrateLoss = parseFloat(document.getElementById('param_citrate_loss').value) || 0;
+        
+        const baseFluidComp = getAdjustedFluidComposition();
+        updateAdjustedFluidDisplay();
+
+        let anticoagRate = 0;
+        if (anticoagType.startsWith('citrate_') && bloodFlow > 0 && targetConc > 0) {
+            const citrateInfo = INFUSIONS[anticoagType];
+            anticoagRate = (targetConc * bloodFlow * 60) / citrateInfo.citrate;
+        }
+        document.getElementById('param_anticoag_rate').value = anticoagRate.toFixed(1);
+
+        const totalDose = fluidRate + caRate + bicarbRate + anticoagRate;
+        document.getElementById('param_total_dose').textContent = totalDose.toFixed(1);
+        if (totalDose === 0) return;
+
+        let total_mmol_h = { na: 0, k: 0, cl: 0, glucose: 0, mg: 0, hco3: 0, ca: 0, citrate: 0, so4: 0 };
+        for (const ion in total_mmol_h) {
+            total_mmol_h[ion] += (baseFluidComp[ion] || 0) * fluidRate / 1000;
+        }
+        total_mmol_h.ca += (INFUSIONS.calcium_gluconate_10.ca || 0) * caRate / 1000;
+        total_mmol_h.na += (INFUSIONS.sodium_bicarbonate_5.na || 0) * bicarbRate / 1000;
+        total_mmol_h.hco3 += (INFUSIONS.sodium_bicarbonate_5.hco3 || 0) * bicarbRate / 1000;
+        
+        if (anticoagType.startsWith('citrate_')) {
+            const citrateInfo = INFUSIONS[anticoagType];
+            total_mmol_h.na += (citrateInfo.na || 0) * anticoagRate / 1000;
+            total_mmol_h.citrate += (citrateInfo.citrate || 0) * anticoagRate / 1000;
+            total_mmol_h.glucose += (citrateInfo.glucose || 0) * anticoagRate / 1000;
+        }
+        
+        const totalDoseL = totalDose / 1000;
+        let finalConcentrations = {};
+        for (const ion in total_mmol_h) {
+            finalConcentrations[ion] = total_mmol_h[ion] / totalDoseL;
+        }
+        
+        document.getElementById('param_final_na').textContent = finalConcentrations.na.toFixed(1);
+        document.getElementById('param_final_k').textContent = finalConcentrations.k.toFixed(1);
+        document.getElementById('param_final_cl').textContent = finalConcentrations.cl.toFixed(1);
+        document.getElementById('param_final_glucose').textContent = finalConcentrations.glucose.toFixed(1);
+        document.getElementById('param_final_mg').textContent = finalConcentrations.mg.toFixed(1);
+        document.getElementById('param_final_hco3').textContent = finalConcentrations.hco3.toFixed(1);
+        document.getElementById('param_final_ca').textContent = finalConcentrations.ca.toFixed(1);
+        document.getElementById('param_final_so4').textContent = finalConcentrations.so4.toFixed(1);
+        document.getElementById('param_final_citrate').textContent = finalConcentrations.citrate.toFixed(1);
+
+        const metabolizedCitrate = finalConcentrations.citrate * (1 - citrateLoss / 100);
+        const generatedHco3 = metabolizedCitrate * 3;
+        const postMetabolismHco3 = finalConcentrations.hco3 + generatedHco3;
+        document.getElementById('param_final_hco3_post_metabolism').textContent = postMetabolismHco3.toFixed(1);
+    }
+    
+    paramInputs.forEach(input => input.addEventListener('input', calculateParameters));
+    populateFluidTable();
+    calculateParameters();
+
+    // --- Tab 3: 容量管理 ---
+    const vmSteps = {
+        step1: document.getElementById('vm-step-1'),
+        step2a: document.getElementById('vm-step-2a'),
+        step2b: document.getElementById('vm-step-2b'),
+        step3: document.getElementById('vm-step-3'),
+        step4: document.getElementById('vm-step-4'),
+    };
+    const vmResult = document.getElementById('vm-result');
+    const vmResultText = document.getElementById('vm-result-text');
+    const vmResetBtn = document.getElementById('vm-reset-btn');
+    const vmRadios = document.querySelectorAll('#tab-content-3 input[type="radio"]');
+
+    function resetVM() {
+        vmRadios.forEach(radio => radio.checked = false);
+        Object.values(vmSteps).forEach((step, index) => {
+            step.classList.toggle('hidden', index !== 0);
+            step.style.opacity = index === 0 ? 1 : 0;
+        });
+        vmResult.classList.add('hidden');
+    }
+
+    function showStep(stepElement) {
+        stepElement.classList.remove('hidden');
+        setTimeout(() => stepElement.style.opacity = 1, 50);
+    }
+    
+    function showResult(text) {
+        vmResultText.innerHTML = text;
+        vmResult.classList.remove('hidden');
+    }
+
+    function handleVMChange() {
+        const vs = document.querySelector('input[name="volume_status"]:checked');
+        const resp = document.querySelector('input[name="responsiveness"]:checked');
+        const hd = document.querySelector('input[name="hemodynamics"]:checked');
+        const rf = document.querySelector('input[name="renal_function"]:checked');
+        const fc = document.querySelector('input[name="final_check"]:checked');
+
+        // Hide all subsequent steps
+        Object.values(vmSteps).forEach(step => { if(step !== vmSteps.step1) step.classList.add('hidden'); });
+        vmResult.classList.add('hidden');
+
+        if (!vs) return; // Start
+
+        if (vs.value === 'deficit') {
+            showStep(vmSteps.step2a);
+            if (!resp) return;
+            if (resp.value === 'good') showResult('<strong>主要建议: 液体复苏</strong><ul><li>策略: 使用最少的补液量维持有效肾灌注和循环血容量，避免组织水肿。</li><li>评估: 建议联合多项方法（如被动抬腿试验, SVV, PPV）并动态测量，提高容量反应性预测的准确度。</li><li>下一步: 液体复苏后，返回第一步重新评估容量状态。</li></ul>');
+            else if (resp.value === 'poor') showResult('<strong>主要建议: 使用血管活性药物</strong><ul><li>策略: 对容量反应性较差的患者，应制定适当的容量管理计划，可考虑使用血管活性药物，避免发生液体超负荷(FO)。</li><li>下一步: 使用药物后，返回第一步重新评估容量状态。</li></ul>');
+        } 
+        else if (vs.value === 'balance') {
+            showResult('<strong>患者容量平衡，血流动力学指标达标且氧合功能正常。</strong><ul><li>策略: 设定CRRT超滤目标量以达到容量平衡目标，根据病情变化及时调整治疗参数。对于严重脓毒症患者，此阶段可采用零平衡目标。</li><li>下一步: 进入肾功能及内环境评估。</li></ul>');
+            showStep(vmSteps.step3);
+        } 
+        else if (vs.value === 'overload') {
+            showStep(vmSteps.step2b);
+            if (!hd) return;
+            if (hd.value === 'stable') showResult('<strong>主要建议: CRRT超滤 (一级或二级水平)</strong><ul><li>策略: 将总体容量控制目标均分到每小时，确定每小时CRRT净超滤率，根据即时液体输入量调整脱水速率，避免容量波动。</li><li>初始超滤率: 建议从低剂量开始 (如 125 ml/h 或 < 1.75 ml·kg⁻¹·h⁻¹)，逐步提高。</li><li>下一步: 血流动力学指标达标且氧合功能正常后，进入肾功能及内环境评估。</li></ul>');
+            else if (hd.value === 'unstable') showResult('<strong>主要建议: CRRT超滤 (三级水平)</strong><ul><li>策略: 根据精确的血流动力学指标(如CVP, MAP, PICCO等)随时调整CRRT净超滤率，达到指定的血流动力学目标，缓慢纠正容量失衡。</li><li>初始超滤率: 建议从低剂量开始 (如 80 ml/h 或 < 1.75 ml·kg⁻¹·h⁻¹)，在血流动力学稳定的前提下逐步提高。</li><li>下一步: 血流动力学指标达标且氧合功能正常后，进入肾功能及内环境评估。</li></ul>');
+            showStep(vmSteps.step3);
+        }
+
+        if (vmSteps.step3.style.opacity === '1' && rf) {
+            if (rf.value === 'no_change') showResult('<strong>肾功能及内环境无改善</strong><ul><li>建议: <strong>继续CRRT，调整CRRT处方</strong>。</li><li>下一步: 返回第一步重新评估容量状态。</li></ul>');
+            else if (rf.value === 'improved') {
+                showStep(vmSteps.step4);
+                if (fc) {
+                    if (fc.value === 'can_stop') showResult('<strong>病情稳定/好转且容量/代谢需求低于肾脏清除能力</strong><ul><li>建议: <strong>停止CRRT</strong>。</li></ul>');
+                    else showResult('<strong>不满足停止CRRT条件</strong><ul><li>建议: 返回第一步，<strong>重新进行容量状态评估</strong>。</li></ul>');
+                }
+            }
+        }
+    }
+    
+    vmRadios.forEach(radio => radio.addEventListener('change', handleVMChange));
+    vmResetBtn.addEventListener('click', resetVM);
+    resetVM();
+});
+
+// --- Tab Switching Logic ---
+function switchTab(tabNumber) {
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+    document.getElementById(`tab-content-${tabNumber}`).classList.add('active');
+    document.getElementById(`tab-btn-${tabNumber}`).classList.add('active');
+}
+</script>
+
+</body>
+</html>
