@@ -168,7 +168,6 @@
 
         .tab-content {
             display: none;
-            animation: fadeInScale 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .tab-content.active {
@@ -1086,7 +1085,7 @@
                 <div class="lg:col-span-5">
                     <div class="sticky top-6 space-y-4">
                         <div
-                            class="bg-slate-50/80 rounded-3xl p-6 shadow-sm border border-slate-200/60 relative overflow-hidden backdrop-blur-md">
+                            class="bg-slate-50 rounded-3xl p-6 shadow-sm border border-slate-200 relative overflow-hidden">
                             <div
                                 class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full -mr-16 -mt-16 blur-3xl">
                             </div>
@@ -1798,31 +1797,39 @@
 
         // Global Tab Switch
         function switchTab(idx) {
+            const targetIdx = parseInt(idx) || 1;
+            
+            // 1. Update buttons
             const btns = document.querySelectorAll('.tab-button');
-            const contents = document.querySelectorAll('.tab-content');
-            const indicator = document.getElementById('tab-indicator');
-            const targetIdx = parseInt(idx);
-            btns.forEach((b, i) => {
-                const active = (i + 1) === targetIdx;
-                b.classList.toggle('active', active);
-                
-                // Content switching based on exact targetIdx
-                const content = document.getElementById(`tab-content-${i + 1}`);
-                if (content) content.classList.toggle('active', active);
-                
-                if (active && indicator) {
-                    // Use getBoundingClientRect for more accurate placement during scrolls/animations
-                    const rect = b.getBoundingClientRect();
-                    const containerRect = b.parentElement.getBoundingClientRect();
-                    indicator.style.width = `${b.offsetWidth}px`;
-                    indicator.style.left = `${b.offsetLeft}px`;
+            btns.forEach((btn, i) => {
+                const isActive = (i + 1) === targetIdx;
+                btn.classList.toggle('active', isActive);
+                if (!isActive) {
+                    btn.classList.remove('text-white');
+                    btn.classList.add('text-slate-500');
+                } else {
+                    btn.classList.add('text-white');
+                    btn.classList.remove('text-slate-500');
                 }
             });
-            
-            // Auto-scroll the tab bar to keep the active tab visible on mobile
+
+            // 2. Update contents - more robust lookup
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach((content, i) => {
+                content.style.display = (i + 1) === targetIdx ? 'block' : 'none';
+            });
+
+            // 3. Update indicator
+            const indicator = document.getElementById('tab-indicator');
             const activeBtn = document.getElementById(`tab-btn-${targetIdx}`);
+            if (indicator && activeBtn) {
+                indicator.style.width = activeBtn.offsetWidth + 'px';
+                indicator.style.left = activeBtn.offsetLeft + 'px';
+            }
+
+            // 4. Mobile scroll-into-view (non-smooth for safety)
             if (activeBtn && window.innerWidth < 768) {
-                activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                activeBtn.scrollIntoView({ inline: 'center', block: 'nearest' });
             }
         }
 
