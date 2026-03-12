@@ -41,9 +41,7 @@
         }
 
         .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.95);
             border: 1px solid var(--glass-border);
             box-shadow: var(--shadow-soft);
         }
@@ -167,12 +165,20 @@
         }
 
         .tab-content {
-            display: none;
-            opacity: 1;
+            height: 0;
+            overflow: hidden;
+            visibility: hidden;
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
         }
 
         .tab-content.active {
-            display: block;
+            height: auto;
+            overflow: visible;
+            visibility: visible;
+            position: relative;
+            left: 0;
             opacity: 1;
         }
 
@@ -1217,7 +1223,6 @@
                                     </tr>
                                 </thead>
                                 <tbody id="fluid-composition-table" class="divide-y divide-slate-50"></tbody>
-                                </tbody>
                             </table>
                         </div>
                     </div>
