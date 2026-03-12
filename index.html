@@ -168,6 +168,7 @@
 
         .tab-content {
             display: none;
+            animation: fadeInScale 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .tab-content.active {
@@ -1083,11 +1084,11 @@
 
                 <!-- Result Section -->
                 <div class="lg:col-span-5">
-                    <div class="sticky top-6 space-y-4">
+                    <div class="space-y-4">
                         <div
-                            class="bg-slate-50 rounded-3xl p-6 shadow-sm border border-slate-200 relative overflow-hidden">
+                            class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
                             <div
-                                class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full -mr-16 -mt-16 blur-3xl">
+                                class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16">
                             </div>
                             <h2
                                 class="text-sm font-bold text-indigo-600 uppercase tracking-widest mb-6 flex items-center gap-2">
@@ -1792,44 +1793,40 @@
             if (resetBtn) resetBtn.onclick = () => { vmRadios.forEach(r => r.checked = false); updateVM(); };
 
             // Initializations
-            calculateFormula(); calculateCreateMode(); calculateParams(); updateVM();
+            calculateFormula();
+            calculateCreateMode();
+            try { calculateParams(); } catch(e) { console.error('calculateParams init error:', e); }
+            updateVM();
         });
 
-        // Global Tab Switch
+        // Global Tab Switch - simplified for maximum mobile compatibility
         function switchTab(idx) {
-            const targetIdx = parseInt(idx) || 1;
-            
-            // 1. Update buttons
-            const btns = document.querySelectorAll('.tab-button');
-            btns.forEach((btn, i) => {
-                const isActive = (i + 1) === targetIdx;
-                btn.classList.toggle('active', isActive);
-                if (!isActive) {
-                    btn.classList.remove('text-white');
-                    btn.classList.add('text-slate-500');
-                } else {
-                    btn.classList.add('text-white');
-                    btn.classList.remove('text-slate-500');
+            try {
+                const targetIdx = parseInt(idx);
+                const btns = document.querySelectorAll('.tab-button');
+                const indicator = document.getElementById('tab-indicator');
+                
+                // Hide all tab contents first
+                for (let i = 1; i <= 3; i++) {
+                    const content = document.getElementById('tab-content-' + i);
+                    if (content) content.classList.remove('active');
                 }
-            });
-
-            // 2. Update contents - more robust lookup
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach((content, i) => {
-                content.style.display = (i + 1) === targetIdx ? 'block' : 'none';
-            });
-
-            // 3. Update indicator
-            const indicator = document.getElementById('tab-indicator');
-            const activeBtn = document.getElementById(`tab-btn-${targetIdx}`);
-            if (indicator && activeBtn) {
-                indicator.style.width = activeBtn.offsetWidth + 'px';
-                indicator.style.left = activeBtn.offsetLeft + 'px';
-            }
-
-            // 4. Mobile scroll-into-view (non-smooth for safety)
-            if (activeBtn && window.innerWidth < 768) {
-                activeBtn.scrollIntoView({ inline: 'center', block: 'nearest' });
+                
+                // Show only the target tab content
+                const targetContent = document.getElementById('tab-content-' + targetIdx);
+                if (targetContent) targetContent.classList.add('active');
+                
+                // Update button states
+                btns.forEach((b, i) => {
+                    const active = (i + 1) === targetIdx;
+                    b.classList.toggle('active', active);
+                    if (active && indicator) {
+                        indicator.style.width = b.offsetWidth + 'px';
+                        indicator.style.left = b.offsetLeft + 'px';
+                    }
+                });
+            } catch (e) {
+                console.error('Tab switch error:', e);
             }
         }
 
