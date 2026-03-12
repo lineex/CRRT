@@ -27,9 +27,14 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg-gradient);
             color: #1e293b;
-            font-size: 20px;
-            /* Increased base size from 18px */
+            font-size: 16px;
             line-height: 1.6;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                font-size: 20px;
+            }
         }
 
         .glass-panel {
@@ -51,8 +56,16 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             background: #ffffff;
             border-color: #e2e8f0;
-            font-size: 1.25rem;
-            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+        }
+
+        @media (min-width: 768px) {
+            input[type="number"],
+            select {
+                font-size: 1.25rem;
+                padding: 1rem 1.25rem;
+            }
         }
 
         /* Prevent overlap by increasing padding for units */
@@ -88,11 +101,27 @@
         }
 
         .tab-nav-container {
-            display: inline-flex;
+            display: flex;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
             background: #f1f5f9;
             padding: 5px;
             border-radius: 14px;
             position: relative;
+        }
+
+        .tab-nav-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .tab-nav-container {
+                display: inline-flex;
+                width: auto;
+                overflow-x: visible;
+            }
         }
 
         .tab-button {
@@ -100,11 +129,19 @@
             z-index: 10;
             transition: all 0.3s ease;
             outline: none;
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 700;
-            padding: 1rem 2.5rem;
+            padding: 0.75rem 1.5rem;
             cursor: pointer;
             user-select: none;
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 768px) {
+            .tab-button {
+                font-size: 1.25rem;
+                padding: 1rem 2.5rem;
+            }
         }
 
         .tab-button.active {
@@ -284,10 +321,10 @@
     </style>
 </head>
 
-<body class="min-h-screen py-8 px-4 flex flex-col items-center">
+<body class="min-h-screen py-4 sm:py-8 px-2 sm:px-4 flex flex-col items-center">
 
-    <div class="w-full max-w-6xl glass-panel rounded-[2.5rem] p-6 md:p-10">
-        <header class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+    <div class="w-full max-w-6xl glass-panel rounded-3xl sm:rounded-[2.5rem] p-4 sm:p-6 md:p-10">
+        <header class="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-10 gap-4">
             <div>
                 <div class="flex items-center gap-3 mb-2">
                     <div
@@ -354,7 +391,8 @@
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                                 <h2 class="section-header text-lg font-bold text-slate-800 mb-0">1. 成分与剂量设定</h2>
                                 <div class="flex items-center gap-3">
-                                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">选择成品液:</span>
+                                    <span
+                                        class="text-sm font-bold text-slate-500 uppercase tracking-wider">选择成品液:</span>
                                     <select id="adjust_template_selector"
                                         class="p-1.5 px-3 border-2 border-blue-100 rounded-xl bg-blue-50/50 text-sm font-black text-blue-600 outline-none cursor-pointer hover:bg-blue-100 hover:border-blue-400 transition-all shadow-sm">
                                         <option value="">-- 请选择成品溶液 --</option>
@@ -528,7 +566,7 @@
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+                                <div class="grid grid-cols-2 gap-x-3 sm:gap-x-6 gap-y-4">
                                     <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
                                         <span
                                             class="text-xs font-bold text-slate-400 uppercase block mb-1">Na<sup>+</sup></span>
@@ -704,7 +742,7 @@
                                     </div>
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-2 gap-3 sm:gap-4">
                                     <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
                                         <span
                                             class="text-xs font-bold text-slate-400 uppercase block mb-1">Na<sup>+</sup></span>
@@ -849,7 +887,7 @@
                                         <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                                         <h3 class="text-sm font-bold text-blue-700 uppercase tracking-wider">配方浓度微调</h3>
                                     </div>
-                                    <div class="grid grid-cols-2 gap-5">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
                                         <div class="space-y-1.5"><label
                                                 class="text-xs font-bold text-slate-500 uppercase ml-1">添加注射用水</label>
                                             <div class="relative"><input type="number" id="param_added_water" value="0"
@@ -893,8 +931,7 @@
                                         <div class="space-y-1.5"><label
                                                 class="text-xs font-bold text-slate-500 uppercase ml-1">添加5%
                                                 NaHCO₃</label>
-                                            <div class="relative"><input type="number" id="param_added_nahco3"
-                                                    value="0"
+                                            <div class="relative"><input type="number" id="param_added_nahco3" value="0"
                                                     class="w-full p-2.5 border border-blue-200 rounded-xl font-mono-calc text-right text-sm bg-blue-50/20"><span
                                                     class="absolute right-3 top-2.5 text-xs font-bold text-slate-400">mL</span>
                                             </div>
@@ -914,7 +951,7 @@
                                             查看组合配方详情
                                         </summary>
                                         <div id="adjusted-fluid-composition-display"
-                                            class="mt-3 p-4 bg-white rounded-xl border border-blue-50 grid grid-cols-2 gap-2 text-xs font-mono-calc">
+                                            class="mt-3 p-4 bg-white rounded-xl border border-blue-50 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono-calc">
                                         </div>
                                     </details>
                                 </div>
@@ -923,11 +960,27 @@
                             <!-- Velocities -->
                             <div class="bg-indigo-50/30 p-4 rounded-2xl border border-indigo-100/50">
                                 <h3 class="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-4">流速管理</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                                     <div class="space-y-1.5"><label
-                                            class="text-sm font-semibold text-slate-500 ml-1">置换液速度</label>
-                                        <div class="relative"><input type="number" id="param_fluid_rate" value="2000"
-                                                class="w-full p-2.5 pr-14 border rounded-xl font-mono-calc text-right"><span
+                                            class="text-sm font-semibold text-slate-500 ml-1">CVVH 前置换</label>
+                                        <div class="relative"><input type="number" id="param_fluid_rate_pre"
+                                                value="1000"
+                                                class="w-full p-2.5 pr-14 border rounded-xl font-mono-calc text-right text-indigo-700 font-bold bg-indigo-50/30"><span
+                                                class="absolute right-3 top-2.5 text-[10px] font-bold text-slate-400">ml/h</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1.5"><label
+                                            class="text-sm font-semibold text-slate-500 ml-1">CVVH 后置换</label>
+                                        <div class="relative"><input type="number" id="param_fluid_rate_post"
+                                                value="1000"
+                                                class="w-full p-2.5 pr-14 border rounded-xl font-mono-calc text-right text-indigo-700 font-bold bg-indigo-50/30"><span
+                                                class="absolute right-3 top-2.5 text-[10px] font-bold text-slate-400">ml/h</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1.5"><label
+                                            class="text-sm font-semibold text-slate-500 ml-1">CVVHDF 透析液</label>
+                                        <div class="relative"><input type="number" id="param_dialysate_rate" value="0"
+                                                class="w-full p-2.5 pr-14 border rounded-xl font-mono-calc text-right text-indigo-700 font-bold bg-indigo-50/30"><span
                                                 class="absolute right-3 top-2.5 text-[10px] font-bold text-slate-400">ml/h</span>
                                         </div>
                                     </div>
@@ -942,6 +995,13 @@
                                             class="text-sm font-semibold text-slate-500 ml-1">5%碳酸氢钠流速</label>
                                         <div class="relative"><input type="number" id="param_bicarb_rate" value="100"
                                                 class="w-full p-2.5 pr-14 border rounded-xl font-mono-calc text-right text-blue-600 font-bold"><span
+                                                class="absolute right-3 top-2.5 text-[10px] font-bold text-slate-400">ml/h</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1.5"><label
+                                            class="text-sm font-semibold text-slate-500 ml-1">净脱水量</label>
+                                        <div class="relative"><input type="number" id="param_uf_rate" value="100"
+                                                class="w-full p-2.5 pr-14 border rounded-xl font-mono-calc text-right text-teal-600 font-bold bg-teal-50/30"><span
                                                 class="absolute right-3 top-2.5 text-[10px] font-bold text-slate-400">ml/h</span>
                                         </div>
                                     </div>
@@ -963,15 +1023,18 @@
                                             </select>
                                         </div>
                                         <div class="space-y-1.5">
-                                            <label class="text-xs font-bold text-slate-700 uppercase ml-1 flex items-center gap-1">
+                                            <label
+                                                class="text-xs font-bold text-slate-700 uppercase ml-1 flex items-center gap-1">
                                                 体内 Ca²⁺ 浓度
-                                                <span class="bg-blue-50 text-[8px] px-1.5 py-0.5 rounded-full text-blue-600 font-bold">IONIC</span>
+                                                <span
+                                                    class="bg-blue-50 text-[8px] px-1.5 py-0.5 rounded-full text-blue-600 font-bold">IONIC</span>
                                             </label>
                                             <div class="relative">
                                                 <input type="number" id="param_patient_ca" step="0.01" value="1.1"
                                                     class="w-full p-2 border border-blue-100 rounded-lg font-mono-calc text-right text-xs bg-blue-50/20 focus:bg-white transition-colors"
                                                     placeholder="1.10">
-                                                <span class="absolute right-2 top-2 text-[10px] font-bold text-slate-400 uppercase">mmol/L</span>
+                                                <span
+                                                    class="absolute right-2 top-2 text-[10px] font-bold text-slate-400 uppercase">mmol/L</span>
                                             </div>
                                         </div>
                                         <div class="space-y-1.5"><label
@@ -1001,7 +1064,7 @@
                                         </div>
                                         <div class="space-y-1.5"><label
                                                 class="text-xs font-bold text-slate-400 uppercase ml-1">枸橼酸清除率</label>
-                                            <div class="relative"><input type="number" id="param_citrate_loss"
+                                            <div class="relative"><input type="number" id="param_citrate_loss" *
                                                     value="22.5" step="0.5"
                                                     class="w-full p-2 border rounded-lg font-mono-calc text-right text-xs"><span
                                                     class="absolute right-2 top-2 text-[10px] font-bold text-slate-400">%</span>
@@ -1160,7 +1223,171 @@
                                     </tr>
                                 </thead>
                                 <tbody id="fluid-composition-table" class="divide-y divide-slate-50"></tbody>
+                                </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: 容量管理 -->
+        <div id="tab-content-3" class="tab-content">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
+                    <!-- Header -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-50">
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">容量管理决策辅助</h2>
+                            <p class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">CRRT Volume Management Wizard</p>
+                        </div>
+                        <button id="vm-reset-btn" class="flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl text-xs font-bold transition-all border border-slate-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                            重置进程
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <!-- Step 1 -->
+                        <div id="vm-step-1" class="vm-question">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-200">1</span>
+                                <h3 class="text-lg font-bold text-slate-700">患者当前容量状态评估</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div class="vm-option group">
+                                    <input type="radio" name="volume_status" id="vs_deficit" value="deficit" class="opacity-0 absolute w-0 h-0">
+                                    <label for="vs_deficit" class="cursor-pointer block p-8 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-blue-50 transition-all text-center">
+                                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mx-auto mb-5 shadow-sm group-hover:shadow-md transition-all text-blue-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                                        </div>
+                                        <span class="text-lg font-bold text-slate-600 group-hover:text-blue-700">容量不足</span>
+                                    </label>
+                                </div>
+                                <div class="vm-option group">
+                                    <input type="radio" name="volume_status" id="vs_balance" value="balance" class="opacity-0 absolute w-0 h-0">
+                                    <label for="vs_balance" class="cursor-pointer block p-8 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-green-50 transition-all text-center">
+                                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mx-auto mb-5 shadow-sm group-hover:shadow-md transition-all text-green-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                        </div>
+                                        <span class="text-lg font-bold text-slate-600 group-hover:text-green-700">容量平衡</span>
+                                    </label>
+                                </div>
+                                <div class="vm-option group">
+                                    <input type="radio" name="volume_status" id="vs_overload" value="overload" class="opacity-0 absolute w-0 h-0">
+                                    <label for="vs_overload" class="cursor-pointer block p-8 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-orange-50 transition-all text-center">
+                                        <div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mx-auto mb-5 shadow-sm group-hover:shadow-md transition-all text-orange-500">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                                        </div>
+                                        <span class="text-lg font-bold text-slate-600 group-hover:text-orange-700">容量过负荷</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2a -->
+                        <div id="vm-step-2a" class="vm-question hidden">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-200">2</span>
+                                <h3 class="text-lg font-bold text-slate-700">容量反应性评估 (Fluid Responsiveness)</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="vm-option group">
+                                    <input type="radio" name="responsiveness" id="resp_good" value="good" class="opacity-0 absolute w-0 h-0">
+                                    <label for="resp_good" class="cursor-pointer block p-6 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-blue-50/50 transition-all text-center">
+                                        <span class="font-bold text-slate-600 group-hover:text-blue-700">反应性良好 (Good)</span>
+                                    </label>
+                                </div>
+                                <div class="vm-option group">
+                                    <input type="radio" name="responsiveness" id="resp_poor" value="poor" class="opacity-0 absolute w-0 h-0">
+                                    <label for="resp_poor" class="cursor-pointer block p-6 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-slate-100 transition-all text-center">
+                                        <span class="font-bold text-slate-600 group-hover:text-slate-800">反应性差 (Poor)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2b -->
+                        <div id="vm-step-2b" class="vm-question hidden">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-200">2</span>
+                                <h3 class="text-lg font-bold text-slate-700">血流动力学评估 (Hemodynamics)</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="vm-option group">
+                                    <input type="radio" name="hemodynamics" id="hd_stable" value="stable" class="opacity-0 absolute w-0 h-0">
+                                    <label for="hd_stable" class="cursor-pointer block p-6 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-green-50/50 transition-all text-center">
+                                        <span class="font-bold text-slate-600 group-hover:text-green-700">生命体征稳定</span>
+                                    </label>
+                                </div>
+                                <div class="vm-option group">
+                                    <input type="radio" name="hemodynamics" id="hd_unstable" value="unstable" class="opacity-0 absolute w-0 h-0">
+                                    <label for="hd_unstable" class="cursor-pointer block p-6 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-rose-50/50 transition-all text-center">
+                                        <span class="font-bold text-slate-600 group-hover:text-rose-700">血流动力学不稳定</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div id="vm-step-3" class="vm-question hidden">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-200">3</span>
+                                <h3 class="text-lg font-bold text-slate-700">肾功能及内环境风险评估</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="vm-option group">
+                                    <input type="radio" name="renal_function" id="rf_improved" value="improved" class="opacity-0 absolute w-0 h-0">
+                                    <label for="rf_improved" class="cursor-pointer block p-6 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-teal-50/50 transition-all text-center">
+                                        <span class="font-bold text-slate-600 group-hover:text-teal-700">肾功能改善 / 内环境趋稳</span>
+                                    </label>
+                                </div>
+                                <div class="vm-option group">
+                                    <input type="radio" name="renal_function" id="rf_no_change" value="no_change" class="opacity-0 absolute w-0 h-0">
+                                    <label for="rf_no_change" class="cursor-pointer block p-6 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-slate-100 transition-all text-center">
+                                        <span class="font-bold text-slate-600 group-hover:text-slate-800">无明显改善</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Step 4 -->
+                        <div id="vm-step-4" class="vm-question hidden">
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-lg shadow-blue-200">4</span>
+                                <h3 class="text-lg font-bold text-slate-700">病情及肾脏清除能力综合评定</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="vm-option group">
+                                    <input type="radio" name="final_check" id="fc_can_stop" value="can_stop" class="opacity-0 absolute w-0 h-0">
+                                    <label for="fc_can_stop" class="cursor-pointer block p-6 bg-blue-50 border-2 border-blue-200 rounded-2xl group-hover:bg-blue-100/50 transition-all text-center">
+                                        <span class="font-bold text-blue-800">病情稳定/好转 且<br><span class="text-xs opacity-70 mt-1 block">容量/代谢需求 &lt; 肾脏清除能力</span></span>
+                                    </label>
+                                </div>
+                                <div class="vm-option group">
+                                    <input type="radio" name="final_check" id="fc_cannot_stop" value="cannot_stop" class="opacity-0 absolute w-0 h-0">
+                                    <label for="fc_cannot_stop" class="cursor-pointer block p-6 bg-slate-50 border-2 border-transparent rounded-2xl group-hover:bg-slate-100 transition-all text-center">
+                                        <span class="font-bold text-slate-600">不满足上述条件</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result -->
+                    <div id="vm-result" class="mt-12 p-8 bg-slate-900 rounded-3xl shadow-2xl relative overflow-hidden hidden transform transition-all duration-500 scale-95 opacity-0 active-result">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.6)] animate-pulse"></div>
+                                <h3 class="text-sm font-bold text-blue-400 uppercase tracking-widest">临床决策辅助建议</h3>
+                            </div>
+                            <div id="vm-result-text" class="text-3xl font-extrabold text-white leading-relaxed tracking-tight"></div>
+                            <div class="mt-6 flex items-center gap-4 text-[10px] text-slate-500 font-medium italic">
+                                <span>* 请结合床旁实时临床数据综合判断</span>
+                                <span>|</span>
+                                <span>Wizard v2.0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1169,6 +1396,7 @@
     </div>
 
     <div class="w-full max-w-5xl mx-auto p-12 text-center group">
+
         <div class="inline-block relative">
             <div
                 class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-5 group-hover:opacity-20 transition duration-1000 group-hover:duration-200">
@@ -1366,11 +1594,11 @@
             function calculateParams() {
                 const fluidType = document.getElementById('param_fluid_type').value;
                 const b = BASE_FLUIDS[fluidType];
-                const v_added = { 
-                    '注射用水': parseFloat(document.getElementById('param_added_water').value) || 0, 
-                    '10% NaCl': parseFloat(document.getElementById('param_added_nacl10').value) || 0, 
-                    '15% KCl': parseFloat(document.getElementById('param_added_kcl15').value) || 0, 
-                    '50% 葡萄糖': parseFloat(document.getElementById('param_added_glucose50').value) || 0, 
+                const v_added = {
+                    '注射用水': parseFloat(document.getElementById('param_added_water').value) || 0,
+                    '10% NaCl': parseFloat(document.getElementById('param_added_nacl10').value) || 0,
+                    '15% KCl': parseFloat(document.getElementById('param_added_kcl15').value) || 0,
+                    '50% 葡萄糖': parseFloat(document.getElementById('param_added_glucose50').value) || 0,
                     '25% MgSO₄': parseFloat(document.getElementById('param_added_mgso4_25').value) || 0,
                     '5% NaHCO₃': parseFloat(document.getElementById('param_added_nahco3').value) || 0
                 };
@@ -1385,17 +1613,28 @@
 
                 // Calculate actual composition
                 const mBase = {}; Object.keys(b.comp).forEach(k => mBase[k] = b.comp[k] * (b.baseV / 1000));
-                mBase.na += v_added['10% NaCl'] * 1.711 + v_added['5% NaHCO₃'] * 0.595; 
-                mBase.cl += v_added['10% NaCl'] * 1.711 + v_added['15% KCl'] * 2.012; 
-                mBase.k += v_added['15% KCl'] * 2.012; 
+                mBase.na += v_added['10% NaCl'] * 1.711 + v_added['5% NaHCO₃'] * 0.595;
+                mBase.cl += v_added['10% NaCl'] * 1.711 + v_added['15% KCl'] * 2.012;
+                mBase.k += v_added['15% KCl'] * 2.012;
                 mBase.glucose += v_added['50% 葡萄糖'] * (500 / 180.16); // Corrected glucose MW from 198 (monohydrate) to 180 (anhydrous) for consistency if needed, but 198 is often used in clinical prep. Keeping it close to previous.
-                mBase.mg += v_added['25% MgSO₄'] * (250 / 246.48); 
+                mBase.mg += v_added['25% MgSO₄'] * (250 / 246.48);
                 mBase.so4 += v_added['25% MgSO₄'] * (250 / 246.48);
                 mBase.hco3 += v_added['5% NaHCO₃'] * 0.595;
                 const actualComp = {}; Object.keys(mBase).forEach(k => actualComp[k] = mBase[k] / (totalBaseV / 1000));
 
                 // CRRT Parameters
-                const flow = { fluid: parseFloat(document.getElementById('param_fluid_rate').value) || 0, ca: parseFloat(document.getElementById('param_ca_rate').value) || 0, bicarb: parseFloat(document.getElementById('param_bicarb_rate').value) || 0, blood: parseFloat(document.getElementById('param_blood_flow').value) || 0 };
+                const flow = {
+                    pre: parseFloat(document.getElementById('param_fluid_rate_pre').value) || 0,
+                    post: parseFloat(document.getElementById('param_fluid_rate_post').value) || 0,
+                    dialysate: parseFloat(document.getElementById('param_dialysate_rate').value) || 0,
+                    uf: parseFloat(document.getElementById('param_uf_rate').value) || 0,
+                    ca: parseFloat(document.getElementById('param_ca_rate').value) || 0,
+                    bicarb: parseFloat(document.getElementById('param_bicarb_rate').value) || 0,
+                    blood: parseFloat(document.getElementById('param_blood_flow').value) || 0
+                };
+
+                const fluidTotal = flow.pre + flow.post + flow.dialysate;
+
                 const citrateType = document.getElementById('param_anticoag_type').value;
                 const target = parseFloat(document.getElementById('param_target_conc').value) || 0;
                 const loss = parseFloat(document.getElementById('param_citrate_loss').value) || 0;
@@ -1407,12 +1646,15 @@
                 }
                 document.getElementById('param_anticoag_rate').value = citrateRate.toFixed(1);
 
-                const totalRate = flow.fluid + flow.ca + flow.bicarb + citrateRate;
-                document.getElementById('param_total_dose').textContent = totalRate.toFixed(0);
-                if (totalRate === 0) return;
+                const totalInfusedRate = fluidTotal + flow.ca + flow.bicarb + citrateRate;
+                const totalDose = totalInfusedRate + flow.uf;
+                document.getElementById('param_total_dose').textContent = totalDose.toFixed(0);
+                if (totalInfusedRate === 0) return;
 
                 const mTotal = { na: 0, k: 0, cl: 0, glucose: 0, mg: 0, hco3: 0, ca: 0, citrate: 0, so4: 0, phos: 0 };
-                Object.keys(mTotal).forEach(k => mTotal[k] += (actualComp[k] || 0) * flow.fluid / 1000);
+                // Ions from replacement fluid bag (pre + post + dialysate)
+                Object.keys(mTotal).forEach(k => mTotal[k] += (actualComp[k] || 0) * fluidTotal / 1000);
+
                 mTotal.ca += (INFUSIONS.ca_glu.ca * flow.ca / 1000);
                 mTotal.na += (INFUSIONS.bicarb.na * flow.bicarb / 1000);
                 mTotal.hco3 += (INFUSIONS.bicarb.hco3 * flow.bicarb / 1000);
@@ -1421,35 +1663,39 @@
                     mTotal.na += (cInf.na * citrateRate / 1000); mTotal.citrate += (cInf.citrate * citrateRate / 1000); mTotal.glucose += ((cInf.glucose || 0) * citrateRate / 1000);
                 }
 
-                const totalRateL = totalRate / 1000;
+                const totalInfusedRateL = totalInfusedRate / 1000;
                 Object.keys(mTotal).forEach(k => {
                     const el = document.getElementById(`param_final_${k}`);
-                    if (el) el.textContent = (mTotal[k] / totalRateL).toFixed(1);
+                    // Note: Systemic mixed concentrations are independent of UF (UF removes fluid at current concentration)
+                    if (el) el.textContent = (mTotal[k] / totalInfusedRateL).toFixed(1);
                 });
 
                 // Clinical Calcium Estimation (In-Filter state)
-                // Filter Ca: decoupled from the post-filter calcium compensation pump (flow.ca)
+                // Filter Ca: diluted ONLY by Pre-dilution fluid and Citrate infusion
                 const patientCa = parseFloat(document.getElementById('param_patient_ca').value) || 1.1;
                 const bloodFlowH = flow.blood * 60 / 1000;
-                
-                // Volume and Molar content excluding the Calcium pump
-                const rateInFilterH = (totalRate - flow.ca); 
-                const mCaInFilter = (mTotal.ca - (INFUSIONS.ca_glu.ca * flow.ca / 1000));
-                
-                const totalMixedCaInFilterWithBlood = (mCaInFilter + patientCa * bloodFlowH) / (rateInFilterH / 1000 + bloodFlowH);
-                const totalMixedCitrateWithBlood = (mTotal.citrate) / (rateInFilterH / 1000 + bloodFlowH);
+
+                // Volume and Molar content entering the filter
+                const rateEnteringFilterH = flow.pre + citrateRate;
+                // Only citrate Ca complexation and Pre-dilution Ca matter before filter. Ca pump is Post-filter.
+                // Assuming replacement fluid has `actualComp.ca`
+                const mCaEnteringFilter = (actualComp.ca || 0) * (flow.pre / 1000);
+                const mCitrateEnteringFilter = (citrateType !== 'none') ? (INFUSIONS[citrateType.replace('_', '')].citrate * citrateRate / 1000) : 0;
+
+                const totalMixedCaInFilterWithBlood = (mCaEnteringFilter + patientCa * bloodFlowH) / (rateEnteringFilterH / 1000 + bloodFlowH);
+                const totalMixedCitrateWithBlood = mCitrateEnteringFilter / (rateEnteringFilterH / 1000 + bloodFlowH);
 
                 // Estimation formula: In circuit, Citrate binds Ca. 
                 let estimatedFilterCa = Math.max(0.15, totalMixedCaInFilterWithBlood - (totalMixedCitrateWithBlood * 0.28));
                 if (totalMixedCitrateWithBlood === 0) estimatedFilterCa = totalMixedCaInFilterWithBlood * 0.9;
 
                 document.getElementById('param_final_ca_ionic').textContent = estimatedFilterCa.toFixed(2);
-                
-                // Show total systemic + mixed Ca (including pump) for the second slot
-                const totalMixedCaWithBlood = (mTotal.ca + patientCa * bloodFlowH) / (totalRateL + bloodFlowH);
+
+                // Show total systemic + mixed Ca (including pump and post-dilution) for the second slot
+                const totalMixedCaWithBlood = (mTotal.ca + patientCa * bloodFlowH) / (totalInfusedRateL + bloodFlowH);
                 document.getElementById('param_final_ca').textContent = totalMixedCaWithBlood.toFixed(2);
 
-                const postHco3 = (mTotal.hco3 / totalRateL) + ((mTotal.citrate / totalRateL) * (1 - loss / 100) * 3);
+                const postHco3 = (mTotal.hco3 / totalInfusedRateL) + ((mTotal.citrate / totalInfusedRateL) * (1 - loss / 100) * 3);
                 document.getElementById('param_final_hco3_post_metabolism').textContent = postHco3.toFixed(1);
             }
             paramInputs.forEach(i => i.addEventListener('input', calculateParams));
