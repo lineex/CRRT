@@ -138,6 +138,8 @@
             cursor: pointer;
             user-select: none;
             flex-shrink: 0;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         @media (min-width: 768px) {
@@ -1067,9 +1069,9 @@
                                         </div>
                                         <div class="space-y-1.5"><label
                                                 class="text-xs font-bold text-slate-400 uppercase ml-1">枸橼酸清除率</label>
-                                            <div class="relative"><input type="number" id="param_citrate_loss" *
+                                            <div class="relative"><input type="number" id="param_citrate_loss"
                                                     value="22.5" step="0.5"
-                                                    class="w-full p-2 border rounded-lg font-mono-calc text-right text-xs"><span
+                                                    class="w-full p-2 border rounded-lg font-mono-calc text-right text-xs focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"><span
                                                     class="absolute right-2 top-2 text-[10px] font-bold text-slate-400">%</span>
                                             </div>
                                         </div>
@@ -1803,12 +1805,25 @@
             btns.forEach((b, i) => {
                 const active = (i + 1) === targetIdx;
                 b.classList.toggle('active', active);
-                if (contents[i]) contents[i].classList.toggle('active', active);
+                
+                // Content switching based on exact targetIdx
+                const content = document.getElementById(`tab-content-${i + 1}`);
+                if (content) content.classList.toggle('active', active);
+                
                 if (active && indicator) {
+                    // Use getBoundingClientRect for more accurate placement during scrolls/animations
+                    const rect = b.getBoundingClientRect();
+                    const containerRect = b.parentElement.getBoundingClientRect();
                     indicator.style.width = `${b.offsetWidth}px`;
                     indicator.style.left = `${b.offsetLeft}px`;
                 }
             });
+            
+            // Auto-scroll the tab bar to keep the active tab visible on mobile
+            const activeBtn = document.getElementById(`tab-btn-${targetIdx}`);
+            if (activeBtn && window.innerWidth < 768) {
+                activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
         }
 
         window.addEventListener('load', () => switchTab(1));
