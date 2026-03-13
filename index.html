@@ -206,8 +206,7 @@
         /* Scale up result numbers */
         #final_volume,
         #create_final_volume,
-        #param_total_dose,
-        #param_final_hco3_post_metabolism {
+        #param_total_dose {
             font-size: 2.75rem !important;
         }
 
@@ -1082,9 +1081,6 @@
                     <div class="space-y-4">
                         <div
                             class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-                            <div
-                                class="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full -mr-16 -mt-16">
-                            </div>
                             <h2
                                 class="text-sm font-bold text-indigo-600 uppercase tracking-widest mb-6 flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
@@ -1103,95 +1099,111 @@
 
                             <div class="space-y-2">
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
                                     <span class="text-sm font-medium text-slate-600">Na<sup>+</sup></span>
-                                    <div class="flex items-center gap-2"><span id="param_final_na"
-                                            class="text-lg font-bold font-mono-calc text-slate-800">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_na" class="text-lg font-bold font-mono-calc text-slate-800 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 135-145</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
                                     <span class="text-sm font-medium text-slate-600">K<sup>+</sup></span>
-                                    <div class="flex items-center gap-2"><span id="param_final_k"
-                                            class="text-lg font-bold font-mono-calc text-teal-600">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_k" class="text-lg font-bold font-mono-calc text-teal-600 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 3.5-5.0</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
                                     <span class="text-sm font-medium text-slate-600">Cl<sup>-</sup></span>
-                                    <div class="flex items-center gap-2"><span id="param_final_cl"
-                                            class="text-lg font-bold font-mono-calc text-slate-800">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_cl" class="text-lg font-bold font-mono-calc text-slate-800 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 95-110</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
                                     <span class="text-sm font-medium text-slate-600">葡萄糖</span>
-                                    <div class="flex items-center gap-2"><span id="param_final_glucose"
-                                            class="text-lg font-bold font-mono-calc text-slate-800">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_glucose" class="text-lg font-bold font-mono-calc text-slate-800 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 3.9-10.0</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
                                     <span class="text-sm font-medium text-slate-600">Mg<sup>2+</sup></span>
-                                    <div class="flex items-center gap-2"><span id="param_final_mg"
-                                            class="text-lg font-bold font-mono-calc text-slate-800">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_mg" class="text-lg font-bold font-mono-calc text-slate-800 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 0.8-1.2</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
                                     <span class="text-sm font-medium text-slate-600">HCO<sub>3</sub><sup>-</sup></span>
-                                    <div class="flex items-center gap-2"><span id="param_final_hco3"
-                                            class="text-lg font-bold font-mono-calc text-blue-600">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_hco3" class="text-lg font-bold font-mono-calc text-blue-600 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 22-32</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
-                                    <span class="text-sm font-medium text-slate-600">Ca<sup>2+</sup> (估计滤器钙)</span>
-                                    <div class="flex items-center gap-2"><span id="param_final_ca_ionic"
-                                            class="text-2xl font-black font-mono-calc text-blue-600">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    <span class="text-sm font-medium text-slate-600">Ca<sup>2+</sup> (估计滤器钙Ca<sup>2+</sup>)</span>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_ca_ionic" class="text-lg font-bold font-mono-calc text-slate-800 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 0.2-0.45</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
-                                    <span class="text-sm font-medium text-slate-600">Ca<sup>2+</sup> (总钙含量)</span>
-                                    <div class="flex items-center gap-2"><span id="param_final_ca"
-                                            class="text-lg font-bold font-mono-calc text-slate-700">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    <span class="text-sm font-medium text-slate-600">Ca<sup>2+</sup> (估计体内Ca<sup>2+</sup>)</span>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_ca" class="text-lg font-bold font-mono-calc text-slate-800 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 1.0-1.3</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
                                     <span class="text-sm font-medium text-slate-600">SO<sub>4</sub><sup>2-</sup></span>
-                                    <div class="flex items-center gap-2"><span id="param_final_so4"
-                                            class="text-lg font-bold font-mono-calc text-slate-800">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_so4" class="text-lg font-bold font-mono-calc text-slate-800 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 0.8-1.2</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="flex items-center justify-between p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
-                                    <span class="text-sm font-medium text-slate-600">HPO<sub>4</sub><sup>2-</sup>
-                                        (磷)</span>
-                                    <div class="flex items-center gap-2"><span id="param_final_phos"
-                                            class="text-lg font-bold font-mono-calc text-slate-800">0</span><span
-                                            class="text-xs text-slate-400 uppercase">mmol/L</span></div>
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    <span class="text-sm font-medium text-slate-600">HPO<sub>4</sub><sup>2-</sup> (磷)</span>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_phos" class="text-lg font-bold font-mono-calc text-slate-800 text-right">0</span>
+                                        <span class="text-xs text-slate-400 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 0.8-1.4</span>
+                                    </div>
                                 </div>
                                 <div
-                                    class="mt-4 p-5 bg-white rounded-2xl border border-yellow-200/50 shadow-sm relative overflow-hidden">
-                                    <div
-                                        class="absolute top-0 right-0 w-24 h-24 bg-yellow-500/5 rounded-full -mr-12 -mt-12 blur-2xl">
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    <span class="text-sm font-medium text-slate-600">枸橼酸根</span>
+                                    <div class="grid grid-cols-[64px_60px_80px] items-center gap-1">
+                                        <span id="param_final_citrate" class="text-lg font-bold font-mono-calc text-yellow-600 text-right">0</span>
+                                        <span class="text-xs text-yellow-500 uppercase">MMOL/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-1">参考: 0-10</span>
                                     </div>
-                                    <div class="flex items-center justify-between mb-4 relative z-10">
-                                        <span class="text-sm font-bold text-yellow-600 uppercase">枸橼酸根</span>
-                                        <div class="flex items-center gap-1"><span id="param_final_citrate"
-                                                class="text-xl font-bold font-mono-calc text-yellow-600">0</span><span
-                                                class="text-xs text-yellow-500 font-bold uppercase">mmol/L</span></div>
-                                    </div>
-                                    <div class="p-4 bg-teal-50 rounded-xl border border-teal-100/50 relative z-10">
-                                        <span class="text-xs font-bold text-teal-600 uppercase block mb-2">代谢后预测总
-                                            HCO<sub>3</sub><sup>-</sup></span>
-                                        <div class="flex items-baseline justify-between">
-                                            <span id="param_final_hco3_post_metabolism"
-                                                class="text-3xl font-bold font-mono-calc text-teal-600">0</span>
-                                            <span class="text-sm font-bold text-teal-500 uppercase">mmol/L</span>
-                                        </div>
+                                </div>
+                                <div
+                                    class="grid grid-cols-[1fr_auto] items-center p-3 rounded-xl border border-transparent hover:bg-white hover:border-slate-100 transition-all shadow-hover">
+                                    <span class="text-sm font-medium text-slate-600">代谢后预测总 HCO<sub>3</sub><sup>-</sup></span>
+                                    <div class="flex items-center gap-2">
+                                        <span id="param_final_hco3_post_metabolism" class="text-lg font-bold font-mono-calc text-teal-600">0</span>
+                                        <span class="text-xs text-teal-500 uppercase">mmol/L</span>
+                                        <span class="text-[10px] text-slate-400 ml-2">参考: 22-32</span>
                                     </div>
                                 </div>
                             </div>
@@ -1394,14 +1406,13 @@
         </div>
     </div>
 
-    <div class="w-full max-w-5xl mx-auto p-12 text-center group">
-
+    <div class="w-full max-w-5xl mx-auto p-6 text-center group">
         <div class="inline-block relative">
             <div
                 class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-5 group-hover:opacity-20 transition duration-1000 group-hover:duration-200">
             </div>
             <div class="relative flex flex-col items-center">
-                <div class="h-px w-24 bg-gradient-to-r from-transparent via-slate-300 to-transparent mb-8"></div>
+                <div class="h-px w-24 bg-gradient-to-r from-transparent via-slate-300 to-transparent mb-4"></div>
                 <p class="text-sm font-bold text-slate-800 tracking-tight mb-2">深圳市南山区人民医院重症医学科</p>
                 <div class="flex items-center gap-4 text-xs font-semibold text-slate-400">
                     <span class="flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3"
@@ -1416,13 +1427,13 @@
                             <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                         </svg>linnot@163.com</span>
                 </div>
-                <p class="mt-8 text-xs font-bold text-slate-500 uppercase tracking-[0.2em] animate-pulse">Precision
+                <p class="mt-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] animate-pulse">Precision
                     Medical Tool &copy; 2026</p>
             </div>
         </div>
     </div>
 
-    <footer class="text-center py-6 px-4">
+    <footer class="text-center py-4 px-4">
         <div class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-full border border-amber-100/50">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" viewBox="0 0 20 20"
                 fill="currentColor">
@@ -1583,12 +1594,46 @@
             const paramInputs = document.querySelectorAll('#tab-content-2 input[type="number"], #tab-content-2 select');
             const INFUSIONS = { ca_glu: { ca: 225 }, bicarb: { na: 595, hco3: 595 }, citrate3: { na: 224.4, citrate: 112.9, glucose: 123.6 }, citrate4: { na: 408.0, citrate: 136.0 } };
             const BASE_FLUIDS = {
-                custom_a: { name: "现配A液", baseV: 3795, comp: { na: 121.7, k: 4.2, cl: 126.0, glucose: 7.9, mg: 1.2, ca: 1.5, hco3: 0, citrate: 0, so4: 1.2, phos: 0 }, recipe: { '0.9% NaCl': 3000, '15% KCl': 8, '注射用水': 750, '50% 葡萄糖': 7.5, '25% MgSO₄': 4.5, '10% 糖酸钙': 25 } },
+                custom_a: { name: "现配A液", baseV: 3795, comp: { na: 121.7, k: 4.2, cl: 126.0, glucose: 5.0, mg: 1.2, ca: 1.5, hco3: 0, citrate: 0, so4: 1.2, phos: 0 }, recipe: { '0.9% NaCl': 3000, '15% KCl': 8, '注射用水': 750, '50% 葡萄糖': 7.5, '25% MgSO₄': 4.5, '10% 糖酸钙': 25 } },
                 custom_ca_free: { name: "现配无钙A液", baseV: 3770, comp: { na: 122.5, k: 4.3, cl: 126.8, glucose: 5.0, mg: 1.2, ca: 0, hco3: 0, citrate: 0, so4: 1.2, phos: 0 }, recipe: { '0.9% NaCl': 3000, '15% KCl': 8, '注射用水': 750, '50% 葡萄糖': 7.5, '25% MgSO₄': 4.5, '10% 糖酸钙': 0 } },
                 product_a: { name: "血液滤过置换基础液", baseV: 4000, comp: { na: 122.3, k: 0, cl: 108.2, glucose: 10.6, mg: 0.8, ca: 1.6, hco3: 0, citrate: 0, so4: 0.8, phos: 0 }, recipe: { '血液滤过置换基础液原液': 4000, '15% KCl': 0 } },
                 baxter_phos: { name: "磷/碳酸氢钠血滤置换液 (百特)", baseV: 5000, comp: { na: 140, k: 4, cl: 122, glucose: 0, mg: 0.75, ca: 0, hco3: 22, citrate: 0, so4: 0, phos: 1 }, recipe: { '百特磷/碳酸氢钠置换液原液': 5000 } },
                 citrate_na: { name: "枸橼酸钠血滤置换液", baseV: 5000, comp: { na: 140, k: 0, cl: 86, glucose: 0, mg: 0, ca: 0, hco3: 0, citrate: 18, so4: 0, phos: 0 }, recipe: { '枸橼酸钠置换液': 5000 } }
             };
+
+            const PARAM_RANGES = {
+                na: [135, 145], k: [3.5, 5.0], cl: [95, 110], glucose: [3.9, 10.0],
+                mg: [0.8, 1.2], hco3: [22, 32], ca: [1.0, 1.3], ca_ionic: [0.2, 0.45],
+                hco3_post_metabolism: [22, 32], citrate: [0, 10],
+                so4: [0.8, 1.2], phos: [0.8, 1.4]
+            };
+
+            function updateValueWithStyle(id, value, isCa = false) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const key = id.replace('param_final_', '');
+                const range = PARAM_RANGES[key];
+                el.textContent = isCa ? value.toFixed(2) : value.toFixed(1);
+                
+                if (range) {
+                    if (value < range[0] || value > range[1]) {
+                        el.classList.add('text-red-500');
+                        el.classList.remove('text-slate-800', 'text-slate-700', 'text-blue-600', 'text-teal-600', 'text-yellow-600');
+                    } else {
+                        el.classList.remove('text-red-500');
+                        // Restore original colors
+                        if (id === 'param_final_k' || id === 'param_final_hco3_post_metabolism') {
+                            el.classList.add('text-teal-600');
+                        } else if (id === 'param_final_hco3') {
+                            el.classList.add('text-blue-600');
+                        } else if (id === 'param_final_citrate') {
+                            el.classList.add('text-yellow-600');
+                        } else {
+                            el.classList.add('text-slate-800');
+                        }
+                    }
+                }
+            }
 
             function calculateParams() {
                 const fluidType = document.getElementById('param_fluid_type').value;
@@ -1664,9 +1709,8 @@
 
                 const totalInfusedRateL = totalInfusedRate / 1000;
                 Object.keys(mTotal).forEach(k => {
-                    const el = document.getElementById(`param_final_${k}`);
-                    // Note: Systemic mixed concentrations are independent of UF (UF removes fluid at current concentration)
-                    if (el) el.textContent = (mTotal[k] / totalInfusedRateL).toFixed(1);
+                    const val = mTotal[k] / totalInfusedRateL;
+                    updateValueWithStyle(`param_final_${k}`, val);
                 });
 
                 // Clinical Calcium Estimation (In-Filter state)
@@ -1688,14 +1732,14 @@
                 let estimatedFilterCa = Math.max(0.15, totalMixedCaInFilterWithBlood - (totalMixedCitrateWithBlood * 0.28));
                 if (totalMixedCitrateWithBlood === 0) estimatedFilterCa = totalMixedCaInFilterWithBlood * 0.9;
 
-                document.getElementById('param_final_ca_ionic').textContent = estimatedFilterCa.toFixed(2);
+                updateValueWithStyle('param_final_ca_ionic', estimatedFilterCa, true);
 
                 // Show total systemic + mixed Ca (including pump and post-dilution) for the second slot
                 const totalMixedCaWithBlood = (mTotal.ca + patientCa * bloodFlowH) / (totalInfusedRateL + bloodFlowH);
-                document.getElementById('param_final_ca').textContent = totalMixedCaWithBlood.toFixed(2);
+                updateValueWithStyle('param_final_ca', totalMixedCaWithBlood, true);
 
                 const postHco3 = (mTotal.hco3 / totalInfusedRateL) + ((mTotal.citrate / totalInfusedRateL) * (1 - loss / 100) * 3);
-                document.getElementById('param_final_hco3_post_metabolism').textContent = postHco3.toFixed(1);
+                updateValueWithStyle('param_final_hco3_post_metabolism', postHco3);
             }
             paramInputs.forEach(i => i.addEventListener('input', calculateParams));
 
@@ -1713,8 +1757,7 @@
             if (tableBody) {
                 tableBody.innerHTML = '';
                 const displayFluids = {
-                    ...BASE_FLUIDS,
-                    normal_saline: { name: "0.9% 生理盐水", baseV: 1000, comp: { na: 154, k: 0, cl: 154, glucose: 0, mg: 0, ca: 0, hco3: 0, citrate: 0, so4: 0, phos: 0 }, recipe: { '0.9% NaCl': 1000 } }
+                    ...BASE_FLUIDS
                 };
                 Object.values(displayFluids).forEach(f => {
                     const row = document.createElement('tr');
