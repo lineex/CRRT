@@ -1675,7 +1675,7 @@
 
             // --- Tab 2: Parameter Scheme ---
             const paramInputs = document.querySelectorAll('#tab-content-2 input[type="number"], #tab-content-2 select');
-            const INFUSIONS = { ca_glu: { ca: 225 }, bicarb: { na: 595, hco3: 595 }, citrate3: { na: 224.4, citrate: 112.9, glucose: 123.6 }, citrate4: { na: 408.0, citrate: 136.0 } };
+            const INFUSIONS = { ca_glu: { ca: 225 }, bicarb: { na: 595, hco3: 595 }, citrate3: { na: 224.4, citrate: 112.9 }, citrate4: { na: 408.0, citrate: 136.0 } };
             const BASE_FLUIDS = {
                 custom_a: { name: "现配A液", baseV: 3795, comp: { na: 121.7, k: 4.2, cl: 126.0, glucose: 5.0, mg: 1.2, ca: 1.5, hco3: 0, citrate: 0, so4: 1.2, phos: 0 }, recipe: { '0.9% NaCl': 3000, '15% KCl': 8, '注射用水': 750, '50% 葡萄糖': 7.5, '25% MgSO₄': 4.5, '10% 糖酸钙': 25 } },
                 custom_ca_free: { name: "现配无钙A液", baseV: 3770, comp: { na: 122.5, k: 4.3, cl: 126.8, glucose: 5.0, mg: 1.2, ca: 0, hco3: 0, citrate: 0, so4: 1.2, phos: 0 }, recipe: { '0.9% NaCl': 3000, '15% KCl': 8, '注射用水': 750, '50% 葡萄糖': 7.5, '25% MgSO₄': 4.5, '10% 糖酸钙': 0 } },
@@ -1911,7 +1911,7 @@
                 mTotal.hco3 += (INFUSIONS.bicarb.hco3 * flow.bicarb / 1000);
                 if (citrateType !== 'none') {
                     const cInf = INFUSIONS[citrateType.replace('_', '')];
-                    mTotal.na += (cInf.na * citrateRate / 1000); mTotal.citrate += (cInf.citrate * citrateRate / 1000); mTotal.glucose += ((cInf.glucose || 0) * citrateRate / 1000);
+                    mTotal.na += (cInf.na * citrateRate / 1000); mTotal.citrate += (cInf.citrate * citrateRate / 1000);
                 }
 
                 const totalInfusedRateL = totalInfusedRate / 1000;
