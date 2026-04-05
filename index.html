@@ -515,6 +515,14 @@
                                             </div>
                                         </div>
                                         <div class="space-y-1.5"><label
+                                                class="text-sm font-semibold text-slate-500 ml-1">8.4%
+                                                NaHCO<sub>3</sub></label>
+                                            <div class="relative"><input type="number" id="add_nahco3_84" value="0"
+                                                    class="w-full p-2.5 pr-12 border rounded-xl font-mono-calc text-right text-blue-600 font-bold"><span
+                                                    class="absolute right-3 top-2.5 text-xs font-bold text-slate-400">mL</span>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1.5"><label
                                                 class="text-sm font-semibold text-slate-500 ml-1">25%
                                                 MgSO<sub>4</sub>·7H<sub>2</sub>O</label>
                                             <div class="relative"><input type="number" id="add_mgso4" value="3.2"
@@ -983,6 +991,14 @@
                                                     class="absolute right-3 top-2.5 text-xs font-bold text-slate-400">mL</span>
                                             </div>
                                         </div>
+                                        <div class="space-y-1.5"><label
+                                                class="text-xs font-bold text-slate-500 uppercase ml-1">添加8.4%
+                                                NaHCO₃</label>
+                                            <div class="relative"><input type="number" id="param_added_nahco3_84" value="0"
+                                                    class="w-full p-2.5 border border-blue-200 rounded-xl font-mono-calc text-right text-sm bg-blue-50/20"><span
+                                                    class="absolute right-3 top-2.5 text-xs font-bold text-slate-400">mL</span>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <details class="mt-5 group">
@@ -1027,9 +1043,14 @@
                             </div>
 
                             <div class="space-y-0">
-                                <div class="grid grid-cols-[1fr_70px_90px] items-center gap-2 py-2 border-b border-slate-100">
-                                    <span class="text-sm font-bold text-slate-600">Na<sup>+</sup></span>
-                                    <div id="param_final_na" class="text-base font-black font-mono-calc text-slate-800 text-right">0</div>
+                                <div class="grid grid-cols-[1fr_70px_90px] items-center gap-2 py-2 border-b border-slate-100 relative group">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-slate-600">Na<sup>+</sup></span>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <div id="param_final_na" class="text-base font-black font-mono-calc text-slate-800 text-right">0</div>
+                                        <div class="text-[10px] text-slate-400 font-bold -mt-1 cursor-help" title="Donnan效应修正后预估体内平衡值">估: <span id="param_est_na">0</span></div>
+                                    </div>
                                     <span class="text-[10px] text-slate-400 font-bold text-right">参考: 135-145</span>
                                 </div>
                                 <div class="grid grid-cols-[1fr_70px_90px] items-center gap-2 py-2 border-b border-slate-100">
@@ -1082,9 +1103,14 @@
                                     <div id="param_final_citrate" class="text-base font-black font-mono-calc text-slate-800 text-right">0</div>
                                     <span class="text-[10px] text-slate-400 font-bold text-right">参考: 0-10</span>
                                 </div>
-                                <div class="grid grid-cols-[1fr_70px_90px] items-center gap-2 py-2 border-b border-slate-100">
-                                    <span class="text-sm font-bold text-slate-600">代谢后 HCO<sub>3</sub><sup>-</sup></span>
-                                    <div id="param_final_hco3_post_metabolism" class="text-base font-black font-mono-calc text-slate-800 text-right">0</div>
+                                <div class="grid grid-cols-[1fr_70px_90px] items-center gap-2 py-2 border-b border-slate-100 relative group">
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-slate-600">代谢后 HCO<sub>3</sub><sup>-</sup></span>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <div id="param_final_hco3_post_metabolism" class="text-base font-black font-mono-calc text-slate-800 text-right">0</div>
+                                        <div class="text-[10px] text-orange-400 font-bold -mt-1 cursor-help" title="受内源性产酸消耗影响，实际测定值往往更低">有效估: &lt;<span id="param_est_hco3">0</span></div>
+                                    </div>
                                     <span class="text-[10px] text-slate-400 font-bold text-right">参考: 22-32</span>
                                 </div>
                             </div>
@@ -1557,6 +1583,7 @@
                 const addKclVol = parseFloat(document.getElementById('add_kcl').value) || 0;
                 const addNaclVol = parseFloat(document.getElementById('add_nacl').value) || 0;
                 const addNahco3Vol = parseFloat(document.getElementById('add_nahco3').value) || 0;
+                const addNahco3_84Vol = parseFloat(document.getElementById('add_nahco3_84').value) || 0;
                 const addMgso4Vol = parseFloat(document.getElementById('add_mgso4').value) || 0;
                 const addWaterVol = parseFloat(document.getElementById('add_water').value) || 0;
                 const addGlucoseVol = parseFloat(document.getElementById('add_glucose').value) || 0;
@@ -1565,7 +1592,7 @@
                 const baseHco3 = parseFloat(document.getElementById('base_hco3').value) || 0;
                 const baseCitrate = parseFloat(document.getElementById('base_citrate').value) || 0;
 
-                const totalVolumeL = (baseVolume + addKclVol + addNaclVol + addNahco3Vol + addMgso4Vol + addWaterVol + addGlucoseVol) / 1000;
+                const totalVolumeL = (baseVolume + addKclVol + addNaclVol + addNahco3Vol + addNahco3_84Vol + addMgso4Vol + addWaterVol + addGlucoseVol) / 1000;
                 document.getElementById('final_volume').textContent = (totalVolumeL * 1000).toFixed(0);
 
                 if (totalVolumeL === 0) return;
@@ -1587,7 +1614,9 @@
                 totalNa += (addNaclVol * 0.1 / MOLAR_MASS.NaCl) * 1000;
                 totalCl += (addNaclVol * 0.1 / MOLAR_MASS.NaCl) * 1000;
                 totalNa += (addNahco3Vol * 0.05 / MOLAR_MASS.NaHCO3) * 1000;
+                totalNa += (addNahco3_84Vol * 0.084 / MOLAR_MASS.NaHCO3) * 1000;
                 totalHco3 += (addNahco3Vol * 0.05 / MOLAR_MASS.NaHCO3) * 1000;
+                totalHco3 += (addNahco3_84Vol * 0.084 / MOLAR_MASS.NaHCO3) * 1000;
                 totalMg += (addMgso4Vol * 0.25 / MOLAR_MASS.MgSO4_7H2O) * 1000;
                 totalSo4 += (addMgso4Vol * 0.25 / MOLAR_MASS.MgSO4_7H2O) * 1000;
                 totalGlucose += (addGlucoseVol * 0.5 / MOLAR_MASS.C6H12O6_H2O) * 1000;
@@ -1660,7 +1689,7 @@
                     Object.keys(t).forEach(k => { const el = document.getElementById(k); if (el) el.value = t[k]; });
 
                     // 2. Global Reset: Clear all adjustment additives for EVERY template selection
-                    ['add_kcl', 'add_nacl', 'add_nahco3', 'add_mgso4', 'add_water', 'add_glucose'].forEach(k => {
+                    ['add_kcl', 'add_nacl', 'add_nahco3', 'add_nahco3_84', 'add_mgso4', 'add_water', 'add_glucose'].forEach(k => {
                         const el = document.getElementById(k); if (el) el.value = 0;
                     });
 
@@ -1719,13 +1748,13 @@
             }
 
             // Per-path additive state
-            const ADDITIVE_KEYS = ['water', 'nacl10', 'kcl15', 'glucose50', 'mgso4_25', 'nahco3'];
-            const ADDITIVE_IDS = ['param_added_water', 'param_added_nacl10', 'param_added_kcl15', 'param_added_glucose50', 'param_added_mgso4_25', 'param_added_nahco3'];
-            const ADDITIVE_LABELS = { water: '注射用水', nacl10: '10% NaCl', kcl15: '15% KCl', glucose50: '50% 葡萄糖', mgso4_25: '25% MgSO₄', nahco3: '5% NaHCO₃' };
+            const ADDITIVE_KEYS = ['water', 'nacl10', 'kcl15', 'glucose50', 'mgso4_25', 'nahco3', 'nahco3_84'];
+            const ADDITIVE_IDS = ['param_added_water', 'param_added_nacl10', 'param_added_kcl15', 'param_added_glucose50', 'param_added_mgso4_25', 'param_added_nahco3', 'param_added_nahco3_84'];
+            const ADDITIVE_LABELS = { water: '注射用水', nacl10: '10% NaCl', kcl15: '15% KCl', glucose50: '50% 葡萄糖', mgso4_25: '25% MgSO₄', nahco3: '5% NaHCO₃', nahco3_84: '8.4% NaHCO₃' };
             const pathAdditives = {
-                post: { water: 0, nacl10: 0, kcl15: 0, glucose50: 0, mgso4_25: 0, nahco3: 0 },
-                dialysate: { water: 0, nacl10: 0, kcl15: 0, glucose50: 0, mgso4_25: 0, nahco3: 0 },
-                pre: { water: 0, nacl10: 0, kcl15: 0, glucose50: 0, mgso4_25: 0, nahco3: 0 }
+                post: { water: 0, nacl10: 0, kcl15: 0, glucose50: 0, mgso4_25: 0, nahco3: 0, nahco3_84: 0 },
+                dialysate: { water: 0, nacl10: 0, kcl15: 0, glucose50: 0, mgso4_25: 0, nahco3: 0, nahco3_84: 0 },
+                pre: { water: 0, nacl10: 0, kcl15: 0, glucose50: 0, mgso4_25: 0, nahco3: 0, nahco3_84: 0 }
             };
             let currentAdditivePath = 'post';
             const pathLabelsMap = { post: '后置换液', dialysate: '透析液', pre: '前置换液' };
@@ -1788,13 +1817,13 @@
                 const totalV = b.baseV + totalAdded;
                 if (totalV === 0) return { comp: b.comp, totalV: b.baseV };
                 const mBase = {}; Object.keys(b.comp).forEach(k => mBase[k] = b.comp[k] * (b.baseV / 1000));
-                mBase.na += (additives.nacl10 || 0) * 1.711 + (additives.nahco3 || 0) * 0.595;
+                mBase.na += (additives.nacl10 || 0) * 1.711 + (additives.nahco3 || 0) * 0.595 + (additives.nahco3_84 || 0) * 1.0;
                 mBase.cl += (additives.nacl10 || 0) * 1.711 + (additives.kcl15 || 0) * 2.012;
                 mBase.k += (additives.kcl15 || 0) * 2.012;
                 mBase.glucose += (additives.glucose50 || 0) * (500 / 198.17);
                 mBase.mg += (additives.mgso4_25 || 0) * (250 / 246.48);
                 mBase.so4 = (mBase.so4 || 0) + (additives.mgso4_25 || 0) * (250 / 246.48);
-                mBase.hco3 += (additives.nahco3 || 0) * 0.595;
+                mBase.hco3 += (additives.nahco3 || 0) * 0.595 + (additives.nahco3_84 || 0) * 1.0;
                 const comp = {}; Object.keys(mBase).forEach(k => comp[k] = mBase[k] / (totalV / 1000));
                 return { comp, totalV };
             }
@@ -1918,6 +1947,10 @@
                 Object.keys(mTotal).forEach(k => {
                     const val = mTotal[k] / totalInfusedRateL;
                     updateValueWithStyle(`param_final_${k}`, val);
+                    if (k === 'na') {
+                        const estNaEl = document.getElementById('param_est_na');
+                        if (estNaEl) estNaEl.textContent = (val * 0.955).toFixed(1); // 吉布斯-唐南效应折损
+                    }
                 });
 
                 // Clinical Calcium Estimation (In-Filter state)
@@ -1950,6 +1983,8 @@
 
                 const postHco3 = (mTotal.hco3 / totalInfusedRateL) + ((mTotal.citrate / totalInfusedRateL) * (1 - loss / 100) * 3);
                 updateValueWithStyle('param_final_hco3_post_metabolism', postHco3);
+                const estHco3El = document.getElementById('param_est_hco3');
+                if (estHco3El) estHco3El.textContent = postHco3.toFixed(1);
             }
             paramInputs.forEach(i => i.addEventListener('input', calculateParams));
 
