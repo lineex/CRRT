@@ -1944,43 +1944,79 @@
                 }
 
                 const totalInfusedRateL = totalInfusedRate / 1000;
+
+                // Clinical Systemic Estimation (Multi-Compartment Model for ALL ions)
+                const patientCa = parseFloat(document.getElementById('param_patient_ca').value) || 1.1;
+                const bloodFlowH = flow.blood * 60 / 1000;
+                const plasmaFlowH = bloodFlowH * 0.65; // ~65% of volume in Hct 35%
+                
+                const qPre = flow.pre / 1000;
+                const qDia = flow.dialysate / 1000;
+                const qPost = flow.post / 1000;
+                const qCit = citrateRate / 1000;
+                const qBicarb = flow.bicarb / 1000;
+                const qCa = flow.ca / 1000;
+                const qUf = flow.uf / 1000;
+
+                // Clinical Calcium Estimation (In-Filter state)
+                const rateEnteringFilterH = qPre + qCit;
+                const mCaEnteringFilter = (compPre.ca || 0) * qPre;
+                const totalMixedCaInFilterWithBlood = (mCaEnteringFilter + patientCa * bloodFlowH) / (rateEnteringFilterH + bloodFlowH);
+                
+                const pumpInfusion = (citrateType !== 'none') ? INFUSIONS[citrateType.replace('_', '')] : null;
+                const mCitrateFromPump = pumpInfusion ? (pumpInfusion.citrate * qCit) : 0;
+                const mCitrateFromBag = (compPre.citrate || 0) * qPre;
+                const totalMixedCitrateWithBlood = (mCitrateFromPump + mCitrateFromBag) / (rateEnteringFilterH + bloodFlowH);
+
+                let estimatedFilterCa = Math.max(0.15, totalMixedCaInFilterWithBlood - (totalMixedCitrateWithBlood * 0.28));
+                if (totalMixedCitrateWithBlood === 0) estimatedFilterCa = totalMixedCaInFilterWithBlood * 0.9;
+                updateValueWithStyle('param_final_ca_ionic', estimatedFilterCa, true);
+
+                // Multi-Compartment returning blood model for all ions
+                const filterPoolVol = plasmaFlowH + qPre + qDia + qCit;
+                const qFilterOut = Math.max(0, plasmaFlowH - qUf - qPost - qBicarb - qCa);
+                const volReturn = qFilterOut + qPost + qBicarb + qCa;
+
+                // Base standard patient concentrations if not available
+                const patientBase = {
+                    na: 140, k: 4.0, cl: 100, glucose: 5.5, mg: 1.0, hco3: 24,
+                    ca: patientCa, citrate: 0, so4: 0.5, phos: 1.0
+                };
+
                 Object.keys(mTotal).forEach(k => {
-                    const val = mTotal[k] / totalInfusedRateL;
-                    updateValueWithStyle(`param_final_${k}`, val);
+                    let cInf_k = pumpInfusion ? (pumpInfusion[k] || 0) : 0;
+                    let bicarb_k = INFUSIONS.bicarb[k] || 0;
+                    let caPump_k = INFUSIONS.ca_glu[k] || 0;
+
+                    // 1. Filter Equilibration Pool Mass for ion k
+                    const filterPoolMass = (plasmaFlowH * (patientBase[k] || 0)) +
+                                           (qPre * (compPre[k] || 0)) +
+                                           (qDia * (compDia[k] || 0)) + 
+                                           (qCit * cInf_k);
+                                           
+                    const filterEqConc = filterPoolVol > 0 ? filterPoolMass / filterPoolVol : (patientBase[k] || 0);
+
+                    // 2. Post-Filter Return Blood Mass
+                    const massReturn = (qFilterOut * filterEqConc) + 
+                                       (qPost * (compPost[k] || 0)) + 
+                                       (qBicarb * bicarb_k) + 
+                                       (qCa * caPump_k);
+
+                    const returnConc = volReturn > 0 ? massReturn / volReturn : 0;
+                    
+                    updateValueWithStyle(`param_final_${k}`, returnConc, k === 'ca');
+
                     if (k === 'na') {
                         const estNaEl = document.getElementById('param_est_na');
-                        if (estNaEl) estNaEl.textContent = (val * 0.955).toFixed(1); // 吉布斯-唐南效应折损
+                        if (estNaEl) estNaEl.textContent = (returnConc * 0.955).toFixed(1); // 吉布斯-唐南效应折损
+                    }
+                    if (k === 'ca') {
+                        const estCaNetEl = document.getElementById('param_est_ca_net');
+                        if (estCaNetEl) estCaNetEl.textContent = (returnConc > patientBase.ca ? '+' : '') + (returnConc - patientBase.ca).toFixed(2);
                     }
                 });
 
-                // Clinical Calcium Estimation (In-Filter state)
-                // Filter Ca: diluted ONLY by Pre-dilution fluid and Citrate infusion
-                const patientCa = parseFloat(document.getElementById('param_patient_ca').value) || 1.1;
-                const bloodFlowH = flow.blood * 60 / 1000;
-
-                // Volume and Molar content entering the filter
-                const rateEnteringFilterH = flow.pre + citrateRate;
-                // Only citrate Ca complexation and Pre-dilution Ca matter before filter. Ca pump is Post-filter.
-                const mCaEnteringFilter = (compPre.ca || 0) * (flow.pre / 1000);
-                const totalMixedCaInFilterWithBlood = (mCaEnteringFilter + patientCa * bloodFlowH) / (rateEnteringFilterH / 1000 + bloodFlowH);
-
-                // Citrate entering filter includes BOTH the anticoag pump AND any citrate in the replacement bag (pre-dilution)
-                const pumpInfusion = (citrateType !== 'none') ? INFUSIONS[citrateType.replace('_', '')] : null;
-                const mCitrateFromPump = pumpInfusion ? (pumpInfusion.citrate * citrateRate / 1000) : 0;
-                const mCitrateFromBag = (compPre.citrate || 0) * (flow.pre / 1000);
-                
-                const totalMixedCitrateWithBlood = (mCitrateFromPump + mCitrateFromBag) / (rateEnteringFilterH / 1000 + bloodFlowH);
-
-                // Estimation formula: In circuit, Citrate binds Ca. 
-                let estimatedFilterCa = Math.max(0.15, totalMixedCaInFilterWithBlood - (totalMixedCitrateWithBlood * 0.28));
-                if (totalMixedCitrateWithBlood === 0) estimatedFilterCa = totalMixedCaInFilterWithBlood * 0.9;
-
-                updateValueWithStyle('param_final_ca_ionic', estimatedFilterCa, true);
-
-                // Show total systemic + mixed Ca (including pump and post-dilution) for the second slot
-                const totalMixedCaWithBlood = (mTotal.ca + patientCa * bloodFlowH) / (totalInfusedRateL + bloodFlowH);
-                updateValueWithStyle('param_final_ca', totalMixedCaWithBlood, true);
-
+                // Post metabolism HCO3 specific handling (kept isolated from the rest as requested)
                 const postHco3 = (mTotal.hco3 / totalInfusedRateL) + ((mTotal.citrate / totalInfusedRateL) * (1 - loss / 100) * 3);
                 updateValueWithStyle('param_final_hco3_post_metabolism', postHco3);
                 const estHco3El = document.getElementById('param_est_hco3');
